@@ -1228,9 +1228,9 @@ const firebaseConfig = {
             async function initFirebase() {
                 try {
                     // Utilise ta config personnalisée en priorité, sinon le fallback sandbox
-                    const activeConfig = (customFirebaseConfig && customFirebaseConfig.apiKey !== "TON_API_KEY") 
-                        ? customFirebaseConfig 
-                        : (typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null);
+const activeConfig = (typeof firebaseConfig !== 'undefined') 
+    ? firebaseConfig 
+    : (typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null);
 
                     if (!activeConfig) {
                         cloudSyncStatus.textContent = 'Mode hors-ligne (veuillez renseigner votre firebaseConfig)';
