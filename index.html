@@ -803,7 +803,7 @@
     </main>
 
     <!-- =========================================================
-         BARRE D'OPTIONS EN BAS (STATISTIQUES, SON, MODIFIER, RESET)
+         BARRE D'OPTIONS EN BAS (STATISTIQUES, SON, MODIFIER, RESET, RESTAURER)
          ========================================================= -->
     <footer class="toolbar-footer">
         <button id="btnOpenStats" class="tool-pill !border-yellow-400/70 !bg-purple-900/90 !text-yellow-200" title="Voir les statistiques, le calendrier et l'historique des games">
@@ -821,7 +821,13 @@
             <span>Modifier</span>
         </button>
 
-        <button id="btnReset" class="tool-pill" title="Remettre le compteur à 0">
+        <label id="btnImport" class="tool-pill cursor-pointer !border-green-400/70 !bg-emerald-950/90 !text-emerald-200" title="Restaurer tes données depuis un fichier JSON">
+            <span>📂</span>
+            <span>Restaurer</span>
+            <input type="file" id="importFile" accept=".json" class="hidden">
+        </label>
+
+        <button id="btnReset" class="tool-pill !border-red-400/50 !text-red-200" title="Remettre le compteur à 0">
             <span>↺</span>
             <span>Reset</span>
         </button>
@@ -1062,6 +1068,7 @@
             const soundLabel = document.getElementById('soundLabel');
             const btnEdit = document.getElementById('btnEdit');
             const btnReset = document.getElementById('btnReset');
+            const importFile = document.getElementById('importFile');
 
             // Modale Statistiques
             const statsModal = document.getElementById('statsModal');
@@ -1182,7 +1189,6 @@
                         osc.start(now);
                         osc.stop(now + 0.23);
                     } else if (type === 'gameEnd') {
-                        // Accord victoire à la fin de la game
                         [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
                             const o = audioCtx.createOscillator();
                             const g = audioCtx.createGain();
@@ -1259,7 +1265,6 @@
                         currentUser = user;
                         cloudSyncStatus.textContent = '☁️ Synchronisation Firebase active';
 
-                        // 1. Écoute du document résumé (totalChests, totalGames, dailyCounts)
                         const summaryRef = doc(db, 'artifacts', appId, 'users', user.uid, 'tracker', 'summary');
                         onSnapshot(summaryRef, (snap) => {
                             if (snap.exists()) {
@@ -1278,14 +1283,12 @@
                             console.error('Erreur snapshot summary:', error);
                         });
 
-                        // 2. Écoute de la collection des games
                         const gamesCol = collection(db, 'artifacts', appId, 'users', user.uid, 'games');
                         onSnapshot(gamesCol, (snapshot) => {
                             const loadedGames = [];
                             snapshot.forEach((docSnap) => {
                                 loadedGames.push({ id: docSnap.id, ...docSnap.data() });
                             });
-                            // Tri en mémoire du plus récent au plus ancien
                             loadedGames.sort((a, b) => (b.endTime || 0) - (a.endTime || 0));
                             gamesHistory = loadedGames;
 
@@ -1380,7 +1383,6 @@
              */
             async function toggleGameSession() {
                 if (!inGame) {
-                    // Démarrer une nouvelle game
                     inGame = true;
                     currentGameStart = Date.now();
                     currentGameChests = 0;
@@ -1395,7 +1397,6 @@
 
                     updateMainDisplay();
                 } else {
-                    // Terminer la game en cours et sauvegarder sur Firebase
                     const endTime = Date.now();
                     const startTime = currentGameStart || endTime;
                     const durationMs = endTime - startTime;
@@ -1422,7 +1423,6 @@
                     playSound('gameEnd');
                     updateMainDisplay('plus');
 
-                    // Ajout optimiste local + sauvegarde cloud
                     gamesHistory.unshift(gameRecord);
                     await Promise.all([
                         saveSummaryToCloud(),
@@ -1484,8 +1484,7 @@
                 yesterdayDate.setDate(now.getDate() - 1);
                 const yesterdayKey = getDateKey(yesterdayDate);
 
-                // Calcul semaine en cours (Lundi à Dimanche)
-                const dayOfWeek = now.getDay(); // 0 = Dimanche, 1 = Lundi...
+                const dayOfWeek = now.getDay();
                 const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
                 const mondayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
                 let weekTotal = 0;
@@ -1497,13 +1496,11 @@
                     weekTotal += (dailyCounts[k] || 0);
                 }
 
-                // Affichage des cartes récapitulatives
                 statToday.textContent = (dailyCounts[todayKey] || 0).toLocaleString('fr-FR');
                 statYesterday.textContent = (dailyCounts[yesterdayKey] || 0).toLocaleString('fr-FR');
                 statWeek.textContent = weekTotal.toLocaleString('fr-FR');
                 statTotalGames.textContent = totalGames.toLocaleString('fr-FR');
 
-                // Moyenne & Record par game
                 if (gamesHistory.length > 0) {
                     const sumGameChests = gamesHistory.reduce((acc, g) => acc + (g.chestsOpened || 0), 0);
                     const avg = sumGameChests / gamesHistory.length;
@@ -1534,17 +1531,15 @@
 
                 calendarDaysGrid.innerHTML = '';
 
-                const firstDay = new Date(year, month, 1).getDay(); // 0=Dim
-                const startOffset = firstDay === 0 ? 6 : firstDay - 1; // Lundi en premier
+                const firstDay = new Date(year, month, 1).getDay();
+                const startOffset = firstDay === 0 ? 6 : firstDay - 1;
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-                // Cases vides avant le 1er du mois
                 for (let i = 0; i < startOffset; i++) {
                     const emptyCell = document.createElement('div');
                     calendarDaysGrid.appendChild(emptyCell);
                 }
 
-                // Jours du mois
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const countForDay = dailyCounts[dateKey] || 0;
@@ -1569,7 +1564,6 @@
                     calendarDaysGrid.appendChild(btn);
                 }
 
-                // Mise à jour du résumé du jour sélectionné
                 selectedDateLabel.textContent = formatDateFr(selectedDateKey);
                 selectedDateChests.textContent = (dailyCounts[selectedDateKey] || 0).toLocaleString('fr-FR');
                 const gamesOnSelectedDay = gamesHistory.filter(g => g.date === selectedDateKey);
@@ -1577,7 +1571,7 @@
             }
 
             /**
-             * Rendu de l'historique des games (toutes ou filtrées par jour sélectionné)
+             * Rendu de l'historique des games
              */
             function renderGamesHistoryList() {
                 if (historyFilterMode === 'day') {
@@ -1671,6 +1665,49 @@
                 soundLabel.textContent = soundEnabled ? 'Son : ON' : 'Son : OFF';
                 if (soundEnabled) playSound('plus');
             });
+
+            // Restauration / Import JSON
+            if (importFile) {
+                importFile.addEventListener('change', (event) => {
+                    const fileReader = new FileReader();
+                    if (event.target.files && event.target.files[0]) {
+                        fileReader.readAsText(event.target.files[0], "UTF-8");
+                        fileReader.onload = async (e) => {
+                            try {
+                                const imported = JSON.parse(e.target.result);
+                                
+                                if (typeof imported.totalChests === 'undefined') {
+                                    alert("Le fichier de sauvegarde est invalide.");
+                                    return;
+                                }
+
+                                if (confirm(`Restaurer cette sauvegarde ? (${imported.totalChests} coffres et ${imported.gamesHistory ? imported.gamesHistory.length : 0} games trouvés). Cela va remplacer les données actuelles.`)) {
+                                    totalChests = imported.totalChests || 0;
+                                    totalGames = imported.totalGames || 0;
+                                    dailyCounts = imported.dailyCounts || {};
+                                    gamesHistory = imported.gamesHistory || [];
+
+                                    await saveSummaryToCloud();
+                                    
+                                    if (gamesHistory.length > 0 && db && currentUser) {
+                                        for (const g of gamesHistory) {
+                                            await saveGameRecordToCloud(g);
+                                        }
+                                    }
+
+                                    updateMainDisplay('plus');
+                                    alert("Données et historique restaurés avec succès !");
+                                    renderStatsView();
+                                }
+                            } catch (err) {
+                                console.error("Erreur lecture fichier:", err);
+                                alert("Erreur lors de la lecture du fichier de sauvegarde.");
+                            }
+                            importFile.value = "";
+                        };
+                    }
+                });
+            }
 
             // Modale Saisie / Reset
             function openModal(mode) {
