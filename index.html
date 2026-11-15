@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Compteur de Coffres Ouverts - Style Fortnite</title>
+    
+    <!-- Configuration PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#261254">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Coffres FN">
+
     <!-- Tailwind CSS pour la mise en page réactive -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Polices style Fortnite (Lilita One & Montserrat ExtraBold) -->
@@ -976,24 +984,24 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, addDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-const firebaseConfig = {
+        const firebaseConfig = {
+          apiKey: "AIzaSyCgoSCwF9MdTBosbtGkXOs-bBLhjlIhf8k",
+          authDomain: "coffres-73b1d.firebaseapp.com",
+          projectId: "coffres-73b1d",
+          storageBucket: "coffres-73b1d.firebasestorage.app",
+          messagingSenderId: "727824757356",
+          appId: "1:727824757356:web:75c5436d9668596777de49",
+          measurementId: "G-3N3RTR8TN3"
+        };
 
-  apiKey: "AIzaSyCgoSCwF9MdTBosbtGkXOs-bBLhjlIhf8k",
-
-  authDomain: "coffres-73b1d.firebaseapp.com",
-
-  projectId: "coffres-73b1d",
-
-  storageBucket: "coffres-73b1d.firebasestorage.app",
-
-  messagingSenderId: "727824757356",
-
-  appId: "1:727824757356:web:75c5436d9668596777de49",
-
-  measurementId: "G-3N3RTR8TN3"
-
-};
-
+        // Enregistrement du Service Worker pour la PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('Service Worker enregistré !', reg))
+                    .catch((err) => console.log('Erreur Service Worker :', err));
+            });
+        }
 
         /**
          * Utilitaires de dates locales (YYYY-MM-DD, HH:MM, durée)
@@ -1227,10 +1235,9 @@ const firebaseConfig = {
              */
             async function initFirebase() {
                 try {
-                    // Utilise ta config personnalisée en priorité, sinon le fallback sandbox
-const activeConfig = (typeof firebaseConfig !== 'undefined') 
-    ? firebaseConfig 
-    : (typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null);
+                    const activeConfig = (typeof firebaseConfig !== 'undefined') 
+                        ? firebaseConfig 
+                        : (typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null);
 
                     if (!activeConfig) {
                         cloudSyncStatus.textContent = 'Mode hors-ligne (veuillez renseigner votre firebaseConfig)';
