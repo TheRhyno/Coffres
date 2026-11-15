@@ -1,10 +1,13 @@
-const CACHE_NAME = 'fortnite-coffres-v2';
+const CACHE_NAME = 'fortnite-coffres-v5';
+
+// Liste des fichiers à mettre en cache initialement
 const assetsToCache = [
+  './',
   './index.html',
   './manifest.json'
 ];
 
-// Installation du Service Worker et mise en cache des fichiers de base
+// Installation du Service Worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -30,9 +33,9 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Interception des requêtes réseau (Stratégie Network First avec repli sur le Cache pour le mode hors-ligne)
+// Interception des requêtes réseau
 self.addEventListener('fetch', (event) => {
-  // On laisse passer les requêtes externes (Firebase, Google Fonts, CDN Tailwind) directement par le réseau
+  // Laisse passer les requêtes externes (Firebase, Google Fonts, Tailwind)
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
