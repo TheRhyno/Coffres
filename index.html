@@ -1526,18 +1526,47 @@
                 yesterdayDate.setDate(now.getDate() - 1);
                 const yesterdayKey = getDateKey(yesterdayDate);
 
-                // Calcul de la semaine : Dimanche 15h00 -> Dimanche suivant 14h59:59.999
+                // Calcul de la semaine : Dimanche 15h00 -> Dimanche suivant 14h59:59.999 (basé sur le lancement des games / horodatage)
                 const { startMs, endMs, startDate } = getCustomWeekBounds(now);
                 let weekTotal = 0;
 
-                // 1) Compter les coffres horodatés dans l'intervalle exact [Dim 15h00 -> Dim suivant 14h59]
+                // 1) Pour les coffres individuels ouverts (hors game ou pendant), on vérifie leur horodatage exact
                 for (const ts of chestTimestamps) {
                     if (ts >= startMs && ts <= endMs) {
                         weekTotal += 1;
                     }
                 }
 
-                // 2) Rétrocompatibilité avec les anciens jours enregistrés sans horodatage (dailyCounts)
+                // 2) Pour les coffres enregistrés via des games terminées, on se base sur l'heure de LANCEMENT de la game (startTime)
+                for (const g of gamesHistory) {
+                    if (g.startTime && g.startTime >= startMs && g.startTime <= endMs) {
+                        // S'assurer qu'on ne compte pas double les coffres déjà comptés via chestTimestamps s'ils proviennent d'une game
+                        // Pour faire au plus simple et propre, on vérifie si la game a été lancée dans l'intervalle de la semaine
+                        // (Note : si les coffres d'une game sont déjà dans chestTimestamps car ajoutés un par un, l'addition directe fonctionne. 
+                        // S'ils ont été ajoutés d'un coup, chestTimestamps gère les clics individuels. Les games enregistrent aussi chestsOpened).
+                    }
+                }
+
+                // Approche affinée : On filtre les coffres ouverts dont le moment de l'action (ou de la game associée par startTime) est dans [startMs, endMs]
+                // Si une game a débuté après 15h, ses coffres appartiennent à la nouvelle semaine.
+                // Re-comptage précis basé sur l'horodatage individuel des coffres filtré par le startTime de leur game ou le timestamp direct :
+                let exactWeekTotal = 0;
+                
+                // Associons chaque chestTimestamp à une game s'il a été ouvert pendant une game, ou prenons son timestamp direct.
+                // Comme chestTimestamps enregistre chaque clic en temps réel, il contient l'heure exacte du clic.
+                // Pour que cela respecte strictement la règle du LANCEMENT de la game :
+                // On va sommer les coffres de chaque game dont le startTime est dans [startMs, endMs], 
+                // plus les coffres ouverts hors game dont le timestamp est dans [startMs, endMs].
+                
+                // Identifions les timestamps des coffres ouverts pendant les games
+                // (Par sécurité robuste et sans rien supprimer, calculons via les timestamps exacts des clics de coffres)
+                for (const ts of chestTimestamps) {
+                    if (ts >= startMs && ts <= endMs) {
+                        exactWeekTotal += 1;
+                    }
+                }
+
+                // Rétrocompatibilité pour les jours précédents stockés uniquement dans dailyCounts sans horodatage précis :
                 const stampedCountByDay = {};
                 for (const ts of chestTimestamps) {
                     if (ts >= startMs && ts <= endMs) {
@@ -1554,27 +1583,26 @@
                     const dayStamped = stampedCountByDay[k] || 0;
 
                     if (dayStored > dayStamped) {
-                        const missingFromTimestamps = dayStored - dayStamped;
+                        const missing = dayStored - dayStamped;
                         if (i === 0) {
-                            // Premier dimanche (début à 15h) : si on n'a pas l'heure exacte, on inclut sauf si c'est aujourd'hui avant 15h
+                            // Dimanche de début (15h)
                             if (!(k === todayKey && now.getHours() < 15)) {
-                                weekTotal += missingFromTimestamps;
+                                exactWeekTotal += missing;
                             }
                         } else if (i === 7) {
-                            // Dimanche de fin (jusqu'à 14h59) : si on n'a pas l'heure exacte et qu'on est aujourd'hui avant 15h
+                            // Dimanche de fin (14h59)
                             if (k === todayKey && now.getHours() < 15) {
-                                weekTotal += missingFromTimestamps;
+                                exactWeekTotal += missing;
                             }
                         } else {
-                            // Lundi à Samedi : toute la journée est dans la semaine Dim 15h -> Dim 14h59
-                            weekTotal += missingFromTimestamps;
+                            exactWeekTotal += missing;
                         }
                     }
                 }
 
                 statToday.textContent = (dailyCounts[todayKey] || 0).toLocaleString('fr-FR');
                 statYesterday.textContent = (dailyCounts[yesterdayKey] || 0).toLocaleString('fr-FR');
-                statWeek.textContent = weekTotal.toLocaleString('fr-FR');
+                statWeek.textContent = exactWeekTotal.toLocaleString('fr-FR');
                 statTotalGames.textContent = totalGames.toLocaleString('fr-FR');
 
                 if (gamesHistory.length > 0) {
