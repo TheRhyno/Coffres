@@ -213,7 +213,6 @@
             transform: scale(1.1) rotate(-3deg);
         }
 
-        /* Halo doré derrière le coffre */
         .chest-aura {
             position: absolute;
             width: 85%;
@@ -245,7 +244,6 @@
             padding: 0.75rem 0;
         }
 
-        /* Bouton Démarrer / Fin de la game */
         .btn-game-state {
             width: 100%;
             max-width: 310px;
@@ -288,7 +286,6 @@
             transform: translateY(4px);
         }
 
-        /* Grand Bouton + style Fortnite */
         .btn-plus {
             position: relative;
             width: min(210px, 56vw);
@@ -335,7 +332,6 @@
             color: rgba(66, 28, 0, 0.75);
         }
 
-        /* Petit Bouton - discret en dessous */
         .btn-minus {
             position: relative;
             width: 84px;
@@ -376,7 +372,6 @@
             cursor: not-allowed;
         }
 
-        /* Particule flottante +1 */
         .floating-plus {
             position: fixed;
             pointer-events: none;
@@ -389,21 +384,11 @@
         }
 
         @keyframes floatUpFade {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, 0) scale(0.7);
-            }
-            40% {
-                opacity: 1;
-                transform: translate(-50%, -38px) scale(1.15);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -75px) scale(0.95);
-            }
+            0% { opacity: 1; transform: translate(-50%, 0) scale(0.7); }
+            40% { opacity: 1; transform: translate(-50%, -38px) scale(1.15); }
+            100% { opacity: 0; transform: translate(-50%, -75px) scale(0.95); }
         }
 
-        /* Barre d'outils discrète en bas */
         .toolbar-footer {
             display: flex;
             align-items: center;
@@ -435,7 +420,6 @@
             color: #ffffff;
         }
 
-        /* Modale personnalisée (remplace alert/confirm) */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -463,7 +447,6 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
         }
 
-        /* Modale Statistiques Complète */
         .stats-modal-card {
             background: linear-gradient(180deg, #22104a 0%, #110629 100%);
             border: 3px solid #7642ff;
@@ -494,7 +477,6 @@
             color: transparent;
         }
 
-        /* Calendrier mensuel interactif */
         .cal-grid {
             display: grid;
             grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -547,18 +529,14 @@
 <body>
     <div class="bg-grid"></div>
 
-    <!-- =========================================================
-         HAUT : BANNIÈRE COMPTEUR STYLE FORTNITE (COFFRE À GAUCHE)
-         ========================================================= -->
+    <!-- HAUT : BANNIÈRE COMPTEUR -->
     <header class="w-full flex flex-col items-center pt-1 sm:pt-2">
         <div id="banner" class="fortnite-banner" role="region" aria-label="Compteur de coffres ouverts">
             
-            <!-- Coffre Pirate fixé à GAUCHE -->
             <div id="chestContainer" class="chest-container">
                 <div class="chest-aura"></div>
                 <svg viewBox="0 0 220 210" class="w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <!-- Dégradés Or -->
                         <linearGradient id="goldMain" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#FFF263"/>
                             <stop offset="40%" stop-color="#FFC800"/>
@@ -573,131 +551,75 @@
                             <stop offset="0%" stop-color="#FFF9A6"/>
                             <stop offset="100%" stop-color="#FFB700"/>
                         </linearGradient>
-
-                        <!-- Dégradés Bois -->
                         <linearGradient id="woodPlank" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stop-color="#9E5020"/>
                             <stop offset="50%" stop-color="#753510"/>
                             <stop offset="100%" stop-color="#4A1E06"/>
                         </linearGradient>
-
-                        <!-- Dégradé Crâne Pierre/Os -->
                         <linearGradient id="skullGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stop-color="#FFFFFF"/>
                             <stop offset="60%" stop-color="#D9D9E3"/>
                             <stop offset="100%" stop-color="#9E9EB0"/>
                         </linearGradient>
-
-                        <!-- Gemmes Magenta / Violette -->
                         <radialGradient id="magentaGem" cx="35%" cy="35%" r="65%">
                             <stop offset="0%" stop-color="#FF99F8"/>
                             <stop offset="45%" stop-color="#E619D8"/>
                             <stop offset="85%" stop-color="#8A0080"/>
                             <stop offset="100%" stop-color="#4D0047"/>
                         </radialGradient>
-
-                        <!-- Gemme Turquoise Sommet -->
                         <radialGradient id="cyanGem" cx="40%" cy="30%" r="65%">
                             <stop offset="0%" stop-color="#B8FFFF"/>
                             <stop offset="50%" stop-color="#00D8E6"/>
                             <stop offset="100%" stop-color="#006B7A"/>
                         </radialGradient>
-
-                        <!-- Yeux Rubis Rouge-Orangé -->
                         <radialGradient id="rubyEye" cx="40%" cy="35%" r="65%">
                             <stop offset="0%" stop-color="#FFF066"/>
                             <stop offset="35%" stop-color="#FF4500"/>
                             <stop offset="80%" stop-color="#B80000"/>
                             <stop offset="100%" stop-color="#5C0000"/>
                         </radialGradient>
-
-                        <!-- Mousse Verte -->
                         <linearGradient id="mossGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stop-color="#6DD42C"/>
                             <stop offset="100%" stop-color="#2D6E0E"/>
                         </linearGradient>
                     </defs>
 
-                    <!-- Ombre au sol -->
                     <ellipse cx="110" cy="193" rx="82" ry="11" fill="rgba(0,0,0,0.45)"/>
-
-                    <!-- Côté 3D droit du coffre (profondeur) -->
                     <path d="M162 42 C185 45, 198 72, 198 106 L195 174 L165 186 L162 42 Z" fill="url(#goldDark)" stroke="#4A2200" stroke-width="2.5"/>
                     <path d="M168 58 C182 62, 188 80, 188 104 L186 164 L168 172 Z" fill="#3D1905"/>
-
-                    <!-- Corps principal du coffre en bois -->
                     <path d="M34 95 L168 95 L165 184 L37 184 Z" fill="url(#woodPlank)" stroke="#3B1704" stroke-width="3"/>
-                    <!-- Lignes des planches de bois -->
                     <line x1="36" y1="125" x2="166" y2="125" stroke="#361403" stroke-width="3"/>
                     <line x1="36" y1="155" x2="166" y2="155" stroke="#361403" stroke-width="3"/>
-
-                    <!-- Couvercle bombé en bois -->
                     <path d="M30 96 C30 50, 56 34, 101 34 C146 34, 172 50, 172 96 Z" fill="url(#woodPlank)" stroke="#3B1704" stroke-width="3"/>
                     <path d="M38 68 Q101 64 164 68" stroke="#361403" stroke-width="3" fill="none"/>
-
-                    <!-- Armatures dorées latérales (Couvercle) -->
                     <path d="M26 98 C26 52, 46 33, 72 32 L78 55 C58 58, 50 74, 49 98 Z" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
                     <path d="M176 98 C176 52, 156 33, 130 32 L124 55 C144 58, 152 74, 153 98 Z" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
-
-                    <!-- Barre dorée horizontale du milieu -->
                     <rect x="24" y="92" width="154" height="22" rx="5" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
-                    <!-- Vis dorées -->
                     <circle cx="38" cy="103" r="5" fill="url(#goldHighlight)" stroke="#522600" stroke-width="1.5"/>
                     <line x1="35" y1="101" x2="41" y2="105" stroke="#522600" stroke-width="1.5"/>
                     <circle cx="164" cy="103" r="5" fill="url(#goldHighlight)" stroke="#522600" stroke-width="1.5"/>
                     <line x1="161" y1="105" x2="167" y2="101" stroke="#522600" stroke-width="1.5"/>
-
-                    <!-- Montants et coins dorés inférieurs -->
                     <path d="M28 114 L52 114 L54 186 L25 186 L25 166 L31 158 Z" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
                     <path d="M174 114 L150 114 L148 186 L177 186 L177 166 L171 158 Z" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
-                    <!-- Base dorée centrale -->
                     <rect x="52" y="172" width="98" height="14" rx="3" fill="url(#goldDark)" stroke="#522600" stroke-width="2"/>
-
-                    <!-- Socle doré et Gemme Turquoise au sommet -->
                     <polygon points="78,34 101,22 124,34 116,46 86,46" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
                     <polygon points="86,32 101,24 116,32 109,40 93,40" fill="url(#cyanGem)" stroke="#00444D" stroke-width="1.8"/>
                     <polygon points="94,29 101,26 106,30 100,33" fill="#E0FFFF" opacity="0.85"/>
-
-                    <!-- Touches de mousse verte (fidèle à la photo) -->
                     <path d="M55 54 Q66 46 76 58 Q68 65 56 61 Z" fill="url(#mossGrad)" stroke="#1E4D07" stroke-width="1.5"/>
                     <path d="M126 52 Q139 45 148 58 Q138 66 125 60 Z" fill="url(#mossGrad)" stroke="#1E4D07" stroke-width="1.5"/>
                     <path d="M62 166 Q73 160 80 172 L60 174 Z" fill="url(#mossGrad)" stroke="#1E4D07" stroke-width="1.5"/>
 
-                    <!-- =====================================================
-                         CRÂNE SERRURE CENTRAL
-                         ===================================================== -->
                     <g id="skullLock">
-                        <!-- Contour principal du crâne -->
-                        <path d="M76 74 
-                                 L88 62 
-                                 L114 62 
-                                 L126 74 
-                                 L128 106 
-                                 L118 116 
-                                 L118 136 
-                                 L84 136 
-                                 L84 116 
-                                 L74 106 Z" 
-                              fill="url(#skullGrad)" stroke="#333042" stroke-width="3" stroke-linejoin="round"/>
-                        
-                        <!-- Fissures et ombres du crâne -->
+                        <path d="M76 74 L88 62 L114 62 L126 74 L128 106 L118 116 L118 136 L84 136 L84 116 L74 106 Z" fill="url(#skullGrad)" stroke="#333042" stroke-width="3" stroke-linejoin="round"/>
                         <path d="M84 65 L89 74 M117 65 L112 73" stroke="#7A788C" stroke-width="2" stroke-linecap="round"/>
-
-                        <!-- Orbite & Oeil Rubis Gauche -->
                         <polygon points="81,87 90,81 97,87 95,97 86,98 80,93" fill="#2A0808"/>
                         <polygon points="83,88 90,83 95,88 93,95 86,96 82,92" fill="url(#rubyEye)" stroke="#FF9E44" stroke-width="1"/>
                         <circle cx="87" cy="87" r="2" fill="#FFF9B0"/>
-
-                        <!-- Orbite & Oeil Rubis Droit -->
                         <polygon points="105,87 112,81 121,87 122,93 116,98 107,97" fill="#2A0808"/>
                         <polygon points="107,88 112,83 119,88 120,92 115,96 109,95" fill="url(#rubyEye)" stroke="#FF9E44" stroke-width="1"/>
                         <circle cx="112" cy="87" r="2" fill="#FFF9B0"/>
-
-                        <!-- Trou de serrure au niveau du nez -->
                         <circle cx="101" cy="102" r="4" fill="#181226"/>
                         <polygon points="99,104 103,104 105,113 97,113" fill="#181226"/>
-
-                        <!-- Dents du crâne -->
                         <rect x="85" y="121" width="32" height="14" rx="2" fill="#E6E6F0" stroke="#333042" stroke-width="2"/>
                         <line x1="91" y1="121" x2="91" y2="135" stroke="#333042" stroke-width="2"/>
                         <line x1="98" y1="121" x2="98" y2="135" stroke="#333042" stroke-width="2"/>
@@ -706,17 +628,11 @@
                         <line x1="85" y1="128" x2="117" y2="128" stroke="#333042" stroke-width="1.5"/>
                     </g>
 
-                    <!-- =====================================================
-                         CHAÎNES DORÉES ENROULÉES (DANS LA BOUCHE DU CRÂNE)
-                         ===================================================== -->
                     <g stroke="#4D2200" stroke-width="2.2" fill="url(#goldMain)">
-                        <!-- Maillons gauche allant vers la mâchoire -->
                         <rect x="18" y="136" width="22" height="11" rx="5.5" transform="rotate(-18 29 141)"/>
                         <rect x="34" y="130" width="24" height="11" rx="5.5" transform="rotate(-24 46 135)"/>
                         <rect x="52" y="122" width="24" height="11" rx="5.5" transform="rotate(-26 64 127)"/>
                         <rect x="70" y="114" width="22" height="11" rx="5.5" transform="rotate(-25 81 119)"/>
-
-                        <!-- Maillons droite partant de la mâchoire -->
                         <rect x="110" y="114" width="22" height="11" rx="5.5" transform="rotate(24 121 119)"/>
                         <rect x="128" y="122" width="24" height="11" rx="5.5" transform="rotate(26 140 127)"/>
                         <rect x="146" y="131" width="24" height="11" rx="5.5" transform="rotate(24 158 136)"/>
@@ -724,31 +640,21 @@
                         <rect x="181" y="131" width="20" height="10" rx="5" transform="rotate(-28 191 136)"/>
                     </g>
 
-                    <!-- =====================================================
-                         4 GEMMES MAGENTA / VIOLETTES AUX COINS
-                         ===================================================== -->
-                    <!-- Haut Gauche -->
                     <g transform="translate(52, 54) rotate(-25)">
                         <ellipse cx="0" cy="0" rx="16" ry="11" fill="url(#goldDark)" stroke="#4D2200" stroke-width="2"/>
                         <ellipse cx="0" cy="0" rx="12" ry="8" fill="url(#magentaGem)" stroke="#470042" stroke-width="1.5"/>
                         <ellipse cx="-3" cy="-2" rx="4.5" ry="2.2" fill="#FFD6FC" opacity="0.85"/>
                     </g>
-
-                    <!-- Haut Droit -->
                     <g transform="translate(150, 54) rotate(25)">
                         <ellipse cx="0" cy="0" rx="16" ry="11" fill="url(#goldDark)" stroke="#4D2200" stroke-width="2"/>
                         <ellipse cx="0" cy="0" rx="12" ry="8" fill="url(#magentaGem)" stroke="#470042" stroke-width="1.5"/>
                         <ellipse cx="-3" cy="-2" rx="4.5" ry="2.2" fill="#FFD6FC" opacity="0.85"/>
                     </g>
-
-                    <!-- Bas Gauche -->
                     <g transform="translate(44, 162) rotate(15)">
                         <circle cx="0" cy="0" r="14" fill="url(#goldDark)" stroke="#4D2200" stroke-width="2"/>
                         <polygon points="-8,-6 0,-10 8,-6 10,3 5,9 -5,9 -10,3" fill="url(#magentaGem)" stroke="#470042" stroke-width="1.5"/>
                         <circle cx="-3" cy="-3" r="2.8" fill="#FFD6FC" opacity="0.85"/>
                     </g>
-
-                    <!-- Bas Droit -->
                     <g transform="translate(158, 162) rotate(-15)">
                         <circle cx="0" cy="0" r="14" fill="url(#goldDark)" stroke="#4D2200" stroke-width="2"/>
                         <polygon points="-8,-6 0,-10 8,-6 10,3 5,9 -5,9 -10,3" fill="url(#magentaGem)" stroke="#470042" stroke-width="1.5"/>
@@ -757,14 +663,12 @@
                 </svg>
             </div>
 
-            <!-- Texte et Chiffre à DROITE du coffre -->
             <div class="counter-info">
                 <div class="counter-title">COFFRES OUVERTS</div>
                 <div id="numberWrapper" class="counter-number-wrapper" title="Cliquer pour ajuster le total">
                     <span id="counterDisplay" class="counter-number">0</span>
                 </div>
 
-                <!-- Indicateur total des games & badge de game en cours -->
                 <div class="games-subbar">
                     <div class="games-total-pill">
                         <span>🎮</span>
@@ -780,32 +684,30 @@
         </div>
     </header>
 
-    <!-- =========================================================
-         CENTRE / BAS : BOUTONS GAME, + (GRAND) ET - (PETIT)
-         ========================================================= -->
+    <!-- CENTRE : BOUTONS + ET - -->
     <main class="controls-area">
-        <!-- Bouton Démarrer / Fin de la game -->
         <button id="btnGameToggle" class="btn-game-state btn-game-start" aria-label="Démarrer ou terminer une game">
             <span id="gameBtnIcon">▶️</span>
             <span id="gameBtnText">Démarrer une game</span>
         </button>
 
-        <!-- Grand Bouton + -->
         <button id="btnPlus" class="btn-plus" aria-label="Ajouter un coffre ouvert">
             <span>+</span>
             <span class="btn-plus-label">+1 Coffre</span>
         </button>
 
-        <!-- Plus petit bouton - en dessous -->
         <button id="btnMinus" class="btn-minus" aria-label="Retirer un coffre">
             <span>−</span>
         </button>
     </main>
 
-    <!-- =========================================================
-         BARRE D'OPTIONS EN BAS (STATISTIQUES, SON, MODIFIER, RESET, RESTAURER)
-         ========================================================= -->
+    <!-- BARRE D'OPTIONS EN BAS -->
     <footer class="toolbar-footer">
+        <button id="btnOpenRewards" class="tool-pill !border-cyan-400/70 !bg-cyan-950/90 !text-cyan-200" title="Voir les objets et récompenses de l'image">
+            <span>🎁</span>
+            <span>Objets & Drops</span>
+        </button>
+
         <button id="btnOpenStats" class="tool-pill !border-yellow-400/70 !bg-purple-900/90 !text-yellow-200" title="Voir les statistiques, le calendrier et l'historique des games">
             <span>📊</span>
             <span>Statistiques</span>
@@ -833,9 +735,7 @@
         </button>
     </footer>
 
-    <!-- =========================================================
-         MODALE STATISTIQUES, CALENDRIER & HISTORIQUE DES GAMES
-         ========================================================= -->
+    <!-- MODALE STATISTIQUES -->
     <div id="statsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="statsModalTitle">
         <div class="stats-modal-card text-left">
             <div class="flex items-center justify-between border-b border-purple-700/60 pb-3 mb-4">
@@ -852,7 +752,6 @@
                 </button>
             </div>
 
-            <!-- 5 Cartes récapitulatives -->
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-5">
                 <div class="stat-box">
                     <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Aujourd'hui</div>
@@ -886,7 +785,6 @@
                 </div>
             </div>
 
-            <!-- Calendrier Interactif -->
             <div class="bg-[#150833] border border-purple-700/60 rounded-2xl p-3.5 mb-5">
                 <div class="flex items-center justify-between mb-3">
                     <button id="calPrevMonth" class="px-3 py-1 rounded-lg bg-purple-900/80 border border-purple-600 text-xs font-black text-white hover:bg-purple-800 cursor-pointer">
@@ -900,21 +798,12 @@
                     </button>
                 </div>
 
-                <!-- Jours de la semaine -->
                 <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-purple-400 uppercase mb-1.5">
-                    <div>Lun</div>
-                    <div>Mar</div>
-                    <div>Mer</div>
-                    <div>Jeu</div>
-                    <div>Ven</div>
-                    <div>Sam</div>
-                    <div>Dim</div>
+                    <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
                 </div>
 
-                <!-- Grille des jours -->
                 <div id="calendarDaysGrid" class="cal-grid"></div>
 
-                <!-- Résumé du jour sélectionné -->
                 <div class="mt-3 pt-2.5 border-t border-purple-800/70 flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div>
                         <span class="text-purple-300 font-bold">Jour sélectionné : </span>
@@ -931,7 +820,6 @@
                 </div>
             </div>
 
-            <!-- Historique détaillé des games -->
             <div>
                 <div class="flex items-center justify-between mb-2.5">
                     <h3 class="text-sm font-black uppercase tracking-wider text-white">
@@ -947,16 +835,51 @@
                     </div>
                 </div>
 
-                <div id="gamesHistoryList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                    <!-- Rempli dynamiquement -->
-                </div>
+                <div id="gamesHistoryList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
             </div>
         </div>
     </div>
 
-    <!-- =========================================================
-         MODALE DE SAISIE / CONFIRMATION PERSONNALISÉE
-         ========================================================= -->
+    <!-- MODALE GRILLE DES OBJETS & DROPS (INSPIRÉE DE TON IMAGE) -->
+    <div id="rewardsModal" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="stats-modal-card text-left" style="max-width: 820px;">
+            <div class="flex items-center justify-between border-b border-purple-700/60 pb-3 mb-4">
+                <div>
+                    <h2 class="text-2xl text-yellow-300 tracking-wide uppercase" style="font-family: 'Lilita One', sans-serif;">
+                        🎁 Suivi des Objets & Drops
+                    </h2>
+                    <p class="text-xs text-purple-300 font-bold mt-0.5">
+                        6 cases uniques en haut/bas-droite + 5 cases orange cliquables
+                    </p>
+                </div>
+                <button id="btnCloseRewards" class="w-9 h-9 rounded-xl bg-purple-950 border border-purple-600 text-purple-200 font-black hover:bg-purple-800 cursor-pointer flex items-center justify-center">
+                    ✕
+                </button>
+            </div>
+
+            <div id="rewardsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                <!-- Généré dynamiquement en JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE DÉTAIL CLICS (POUR LES 5 CASES ORANGE) -->
+    <div id="detailModal" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <h2 id="detailModalTitle" class="text-xl font-black uppercase tracking-wide text-yellow-300 mb-2" style="font-family: 'Lilita One', sans-serif;">
+                Détails de l'objet
+            </h2>
+            <p id="detailModalDesc" class="text-sm text-purple-200 mb-4">
+                Historique des coffres à chaque clic :
+            </p>
+            <div id="detailClicksList" class="max-h-48 overflow-y-auto space-y-1.5 mb-5 text-xs text-left bg-[#120729] p-2.5 rounded-xl border border-purple-800"></div>
+            <button id="detailModalClose" class="w-full py-2.5 px-4 rounded-xl font-extrabold text-sm bg-purple-950 border border-purple-700 text-purple-200 hover:bg-purple-900 cursor-pointer">
+                Fermer
+            </button>
+        </div>
+    </div>
+
+    <!-- MODALE SAISIE / RESET GLOBALE -->
     <div id="customModal" class="modal-backdrop" role="dialog" aria-modal="true">
         <div class="modal-card">
             <h2 id="modalTitle" class="text-xl font-black uppercase tracking-wide text-yellow-300 mb-2" style="font-family: 'Lilita One', sans-serif;">
@@ -1000,7 +923,6 @@
           measurementId: "G-3N3RTR8TN3"
         };
 
-        // Enregistrement du Service Worker pour la PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -1009,9 +931,6 @@
             });
         }
 
-        /**
-         * Utilitaires de dates locales (YYYY-MM-DD, HH:MM, durée)
-         */
         function getDateKey(dateObj = new Date()) {
             const y = dateObj.getFullYear();
             const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -1042,11 +961,7 @@
             return dateObj.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
         }
 
-        /**
-         * Initialisation Firebase & Gestionnaire principal
-         */
         document.addEventListener('DOMContentLoaded', async () => {
-            // Éléments DOM principaux
             const banner = document.getElementById('banner');
             const counterDisplay = document.getElementById('counterDisplay');
             const numberWrapper = document.getElementById('numberWrapper');
@@ -1062,6 +977,17 @@
             const btnPlus = document.getElementById('btnPlus');
             const btnMinus = document.getElementById('btnMinus');
 
+            const btnOpenRewards = document.getElementById('btnOpenRewards');
+            const rewardsModal = document.getElementById('rewardsModal');
+            const btnCloseRewards = document.getElementById('btnCloseRewards');
+            const rewardsGrid = document.getElementById('rewardsGrid');
+
+            const detailModal = document.getElementById('detailModal');
+            const detailModalTitle = document.getElementById('detailModalTitle');
+            const detailModalDesc = document.getElementById('detailModalDesc');
+            const detailClicksList = document.getElementById('detailClicksList');
+            const detailModalClose = document.getElementById('detailModalClose');
+
             const btnOpenStats = document.getElementById('btnOpenStats');
             const btnToggleSound = document.getElementById('btnToggleSound');
             const soundIcon = document.getElementById('soundIcon');
@@ -1070,7 +996,6 @@
             const btnReset = document.getElementById('btnReset');
             const importFile = document.getElementById('importFile');
 
-            // Modale Statistiques
             const statsModal = document.getElementById('statsModal');
             const btnCloseStats = document.getElementById('btnCloseStats');
             const cloudSyncStatus = document.getElementById('cloudSyncStatus');
@@ -1093,7 +1018,6 @@
             const filterGamesAll = document.getElementById('filterGamesAll');
             const gamesHistoryList = document.getElementById('gamesHistoryList');
 
-            // Modale Saisie / Reset
             const customModal = document.getElementById('customModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalDesc = document.getElementById('modalDesc');
@@ -1101,36 +1025,62 @@
             const modalCancel = document.getElementById('modalCancel');
             const modalConfirm = document.getElementById('modalConfirm');
 
-            // État applicatif
             let totalChests = 0;
             let totalGames = 0;
-            let dailyCounts = {}; // { "YYYY-MM-DD": number }
-            let gamesHistory = []; // Liste des parties terminées
+            let dailyCounts = {};
+            let gamesHistory = [];
 
-            // État de la game en cours
+            // État des objets / récompenses (12 cases)
+            let rewardsState = JSON.parse(localStorage.getItem('fortnite_rewards_state')) || {
+                'item_0': { obtained: false, chestCount: 0 },
+                'item_1': { obtained: false, chestCount: 0 },
+                'item_2': { obtained: false, chestCount: 0 },
+                'item_3': { obtained: false, chestCount: 0 },
+                'item_4': { obtained: false, chestCount: 0 },
+                'item_5': { obtained: false, chestCount: 0 },
+                'item_11': { obtained: false, chestCount: 0 }, // 12ème case bas droite
+                'item_6': { clicks: 0, clickChestHistory: [] },
+                'item_7': { clicks: 0, clickChestHistory: [] },
+                'item_8': { clicks: 0, clickChestHistory: [] },
+                'item_9': { clicks: 0, clickChestHistory: [] },
+                'item_10': { clicks: 0, clickChestHistory: [] }
+            };
+
+            const itemsConfig = [
+                { id: 'item_0', name: 'Solid Gold Lil Uzi Vert', type: 'unique', color: 'from-purple-900 to-indigo-950' },
+                { id: 'item_1', name: 'Lil\' Uzi Crew', type: 'unique', color: 'from-purple-900 to-indigo-950' },
+                { id: 'item_2', name: 'So Kawaii', type: 'unique', color: 'from-purple-900 to-indigo-950' },
+                { id: 'item_3', name: 'Cadillac CT5-V Blackwing', type: 'unique', color: 'from-neutral-900 to-neutral-950' },
+                { id: 'item_4', name: 'Pirate Shop Access (2026)', type: 'unique', color: 'from-amber-900 to-amber-950' },
+                { id: 'item_5', name: 'Pirate Shop Access (2027)', type: 'unique', color: 'from-amber-900 to-amber-950' },
+                // 5 cases orange cliquables
+                { id: 'item_6', name: 'Golden Firework', type: 'multi', color: 'from-amber-600 to-orange-700' },
+                { id: 'item_7', name: 'Lucky Locator', type: 'multi', color: 'from-amber-600 to-orange-700' },
+                { id: 'item_8', name: 'Portable Extractor', type: 'multi', color: 'from-amber-600 to-orange-700' },
+                { id: 'item_9', name: 'Sprite Locator', type: 'multi', color: 'from-amber-600 to-orange-700' },
+                { id: 'item_10', name: 'Extraction Accelerator', type: 'multi', color: 'from-amber-600 to-orange-700' },
+                // 12ème case en bas à droite
+                { id: 'item_11', name: 'London (Jam Track)', type: 'unique', color: 'from-purple-900 to-indigo-950' }
+            ];
+
             let inGame = false;
             let currentGameStart = null;
             let currentGameChests = 0;
             let timerInterval = null;
 
-            // État Calendrier & Filtres
             let currentCalDate = new Date();
             let selectedDateKey = getDateKey(new Date());
-            let historyFilterMode = 'all'; // 'all' ou 'day'
+            let historyFilterMode = 'all';
 
             let soundEnabled = true;
             let modalMode = 'edit';
             let audioCtx = null;
 
-            // Firebase Refs
             let db = null;
             let auth = null;
             let currentUser = null;
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'fortnite-chest-tracker';
 
-            /**
-             * Synthétiseur sonore Web Audio API
-             */
             function playSound(type) {
                 if (!soundEnabled) return;
                 try {
@@ -1156,18 +1106,6 @@
                         gain.connect(audioCtx.destination);
                         osc.start(now);
                         osc.stop(now + 0.25);
-
-                        const osc2 = audioCtx.createOscillator();
-                        const gain2 = audioCtx.createGain();
-                        osc2.type = 'sine';
-                        osc2.frequency.setValueAtTime(783.99, now + 0.04);
-                        osc2.frequency.exponentialRampToValueAtTime(1567.98, now + 0.2);
-                        gain2.gain.setValueAtTime(0.14, now + 0.04);
-                        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-                        osc2.connect(gain2);
-                        gain2.connect(audioCtx.destination);
-                        osc2.start(now + 0.04);
-                        osc2.stop(now + 0.29);
                     } else if (type === 'minus') {
                         osc.type = 'sine';
                         osc.frequency.setValueAtTime(340, now);
@@ -1205,9 +1143,6 @@
                 } catch (e) {}
             }
 
-            /**
-             * Sauvegarde de l'état global et journalier sur Firestore
-             */
             async function saveSummaryToCloud() {
                 if (!db || !currentUser) return;
                 try {
@@ -1216,6 +1151,7 @@
                         totalChests,
                         totalGames,
                         dailyCounts,
+                        rewardsState,
                         updatedAt: Date.now()
                     }, { merge: true });
                 } catch (err) {
@@ -1223,9 +1159,6 @@
                 }
             }
 
-            /**
-             * Enregistre une game terminée dans Firestore
-             */
             async function saveGameRecordToCloud(gameRecord) {
                 if (!db || !currentUser) return;
                 try {
@@ -1236,17 +1169,11 @@
                 }
             }
 
-            /**
-             * Connexion Firebase Auth + Écouteurs temps réel
-             */
             async function initFirebase() {
                 try {
-                    const activeConfig = (typeof firebaseConfig !== 'undefined') 
-                        ? firebaseConfig 
-                        : (typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null);
-
+                    const activeConfig = (typeof firebaseConfig !== 'undefined') ? firebaseConfig : null;
                     if (!activeConfig) {
-                        cloudSyncStatus.textContent = 'Mode hors-ligne (veuillez renseigner votre firebaseConfig)';
+                        cloudSyncStatus.textContent = 'Mode hors-ligne';
                         return;
                     }
 
@@ -1271,16 +1198,14 @@
                                 const data = snap.data();
                                 if (typeof data.totalChests === 'number') totalChests = data.totalChests;
                                 if (typeof data.totalGames === 'number') totalGames = data.totalGames;
-                                if (data.dailyCounts && typeof data.dailyCounts === 'object') {
-                                    dailyCounts = data.dailyCounts;
+                                if (data.dailyCounts) dailyCounts = data.dailyCounts;
+                                if (data.rewardsState) {
+                                    rewardsState = data.rewardsState;
+                                    localStorage.setItem('fortnite_rewards_state', JSON.stringify(rewardsState));
                                 }
                                 updateMainDisplay();
-                                if (statsModal.classList.contains('open')) {
-                                    renderStatsView();
-                                }
+                                if (statsModal.classList.contains('open')) renderStatsView();
                             }
-                        }, (error) => {
-                            console.error('Erreur snapshot summary:', error);
                         });
 
                         const gamesCol = collection(db, 'artifacts', appId, 'users', user.uid, 'games');
@@ -1291,23 +1216,14 @@
                             });
                             loadedGames.sort((a, b) => (b.endTime || 0) - (a.endTime || 0));
                             gamesHistory = loadedGames;
-
-                            if (statsModal.classList.contains('open')) {
-                                renderStatsView();
-                            }
-                        }, (error) => {
-                            console.error('Erreur snapshot games:', error);
+                            if (statsModal.classList.contains('open')) renderStatsView();
                         });
                     });
                 } catch (err) {
                     console.error('Erreur init Firebase:', err);
-                    cloudSyncStatus.textContent = 'Erreur de configuration Firebase';
                 }
             }
 
-            /**
-             * Particule flottante +1
-             */
             function spawnFloatingPlus(clientX, clientY) {
                 const el = document.createElement('div');
                 el.className = 'floating-plus';
@@ -1331,9 +1247,6 @@
                 el.addEventListener('animationend', () => el.remove());
             }
 
-            /**
-             * Met à jour l'interface principale
-             */
             function updateMainDisplay(animationType = null) {
                 counterDisplay.textContent = totalChests.toLocaleString('fr-FR');
                 totalGamesDisplay.textContent = totalGames.toLocaleString('fr-FR');
@@ -1358,13 +1271,10 @@
                     counterDisplay.classList.remove('pop', 'shrink');
                     chestContainer.classList.remove('chest-bounce');
                     banner.classList.remove('pulse-glow');
-
                     void counterDisplay.offsetWidth;
-
                     counterDisplay.classList.add('pop');
                     chestContainer.classList.add('chest-bounce');
                     banner.classList.add('pulse-glow');
-
                     setTimeout(() => {
                         counterDisplay.classList.remove('pop');
                         chestContainer.classList.remove('chest-bounce');
@@ -1378,9 +1288,125 @@
                 }
             }
 
-            /**
-             * Gestion Démarrer / Terminer une game
-             */
+            // Gestion de la grille des objets et récompenses
+            function renderRewardsGrid() {
+                rewardsGrid.innerHTML = itemsConfig.map((item) => {
+                    const state = rewardsState[item.id];
+                    if (item.type === 'unique') {
+                        const isChecked = state.obtained;
+                        return `
+                            <div class="relative flex flex-col justify-between p-3 rounded-xl bg-gradient-to-b ${item.color} border-2 ${isChecked ? 'border-green-400 shadow-[0_0_15px_rgba(52,211,153,0.3)]' : 'border-purple-700/60'} cursor-pointer hover:border-yellow-400 transition-all select-none" data-id="${item.id}">
+                                <div class="flex items-start justify-between">
+                                    <span class="text-[11px] font-black uppercase text-purple-200">${item.name}</span>
+                                    <div class="w-6 h-6 rounded-lg border-2 ${isChecked ? 'bg-green-500 border-green-300 text-white' : 'bg-purple-950/80 border-purple-500'} flex items-center justify-center font-bold text-xs">
+                                        ${isChecked ? '✓' : ''}
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-2 border-t border-purple-800/50 text-right">
+                                    ${isChecked ? `<span class="text-[11px] font-black text-green-300">Obtenu à : ${state.chestCount} coffres</span>` : `<span class="text-[10px] text-purple-400 font-bold">Non obtenu</span>`}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="relative flex flex-col justify-between p-3 rounded-xl bg-gradient-to-b ${item.color} border-2 border-amber-400/70 shadow-md select-none" data-id="${item.id}">
+                                <div class="flex items-start justify-between">
+                                    <span class="text-[11px] font-black uppercase text-white">${item.name}</span>
+                                    <span class="text-xs font-black bg-black/40 px-2 py-0.5 rounded-full text-yellow-300">x${state.clicks}</span>
+                                </div>
+                                <div class="mt-3 pt-2 border-t border-amber-600/50 flex items-center justify-between gap-1">
+                                    <button type="button" class="btn-item-click flex-1 py-1 px-2 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-amber-950 font-black text-xs cursor-pointer shadow">
+                                        + Clic
+                                    </button>
+                                    <button type="button" class="btn-item-detail py-1 px-2 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-amber-400/50 text-amber-200 font-bold text-xs cursor-pointer">
+                                        Détail
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }).join('');
+
+                rewardsGrid.querySelectorAll('[data-id]').forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    const itemConf = itemsConfig.find(i => i.id === id);
+
+                    if (itemConf.type === 'unique') {
+                        card.addEventListener('click', () => {
+                            const currentState = rewardsState[id];
+                            if (!currentState.obtained) {
+                                if (confirm(`Avez-vous vraiment obtenu l'objet "${itemConf.name}" ?`)) {
+                                    rewardsState[id] = { obtained: true, chestCount: totalChests };
+                                    localStorage.setItem('fortnite_rewards_state', JSON.stringify(rewardsState));
+                                    saveSummaryToCloud();
+                                    renderRewardsGrid();
+                                }
+                            } else {
+                                if (confirm(`Voulez-vous décocher l'objet "${itemConf.name}" ?`)) {
+                                    rewardsState[id] = { obtained: false, chestCount: 0 };
+                                    localStorage.setItem('fortnite_rewards_state', JSON.stringify(rewardsState));
+                                    saveSummaryToCloud();
+                                    renderRewardsGrid();
+                                }
+                            }
+                        });
+                    } else {
+                        const btnClick = card.querySelector('.btn-item-click');
+                        const btnDetail = card.querySelector('.btn-item-detail');
+
+                        btnClick.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            rewardsState[id].clicks += 1;
+                            rewardsState[id].clickChestHistory.push({
+                                clickNumber: rewardsState[id].clicks,
+                                chestTotal: totalChests,
+                                timeStr: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                            });
+                            localStorage.setItem('fortnite_rewards_state', JSON.stringify(rewardsState));
+                            saveSummaryToCloud();
+                            renderRewardsGrid();
+                        });
+
+                        btnDetail.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openDetailModal(itemConf);
+                        });
+                    }
+                });
+            }
+
+            function openDetailModal(itemConf) {
+                const state = rewardsState[itemConf.id];
+                detailModalTitle.textContent = itemConf.name;
+                detailModalDesc.textContent = `Total clics : ${state.clicks} fois`;
+
+                if (!state.clickChestHistory || state.clickChestHistory.length === 0) {
+                    detailClicksList.innerHTML = `<div class="text-purple-300 italic text-center py-2">Aucun clic enregistré pour le moment.</div>`;
+                } else {
+                    detailClicksList.innerHTML = state.clickChestHistory.map(entry => `
+                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#1a0c38] border border-purple-800/60">
+                            <span class="font-bold text-yellow-300">Clic #${entry.clickNumber}</span>
+                            <span class="text-purple-200">À <strong class="text-white">${entry.chestTotal}</strong> coffres</span>
+                            <span class="text-[10px] text-purple-400">${entry.timeStr}</span>
+                        </div>
+                    `).join('');
+                }
+                detailModal.classList.add('open');
+            }
+
+            btnOpenRewards.addEventListener('click', () => {
+                renderRewardsGrid();
+                rewardsModal.classList.add('open');
+            });
+            btnCloseRewards.addEventListener('click', () => rewardsModal.classList.remove('open'));
+            rewardsModal.addEventListener('click', (e) => {
+                if (e.target === rewardsModal) rewardsModal.classList.remove('open');
+            });
+            detailModalClose.addEventListener('click', () => detailModal.classList.remove('open'));
+            detailModal.addEventListener('click', (e) => {
+                if (e.target === detailModal) detailModal.classList.remove('open');
+            });
+
             async function toggleGameSession() {
                 if (!inGame) {
                     inGame = true;
@@ -1431,9 +1457,6 @@
                 }
             }
 
-            /**
-             * Ajouter (+1) ou retirer (-1) un coffre
-             */
             function increment(event) {
                 const todayKey = getDateKey(new Date());
                 totalChests += 1;
@@ -1473,13 +1496,9 @@
                 if (navigator.vibrate) navigator.vibrate(10);
             }
 
-            /**
-             * Calculs et rendu complet de la vue Statistiques & Calendrier
-             */
             function renderStatsView() {
                 const now = new Date();
                 const todayKey = getDateKey(now);
-
                 const yesterdayDate = new Date(now);
                 yesterdayDate.setDate(now.getDate() - 1);
                 const yesterdayKey = getDateKey(yesterdayDate);
@@ -1519,18 +1538,13 @@
                 renderGamesHistoryList();
             }
 
-            /**
-             * Rendu de la grille du calendrier mensuel
-             */
             function renderCalendar() {
                 const year = currentCalDate.getFullYear();
                 const month = currentCalDate.getMonth();
-
                 const monthName = new Date(year, month, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
                 calMonthLabel.textContent = monthName;
 
                 calendarDaysGrid.innerHTML = '';
-
                 const firstDay = new Date(year, month, 1).getDay();
                 const startOffset = firstDay === 0 ? 6 : firstDay - 1;
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -1570,9 +1584,6 @@
                 selectedDateGamesCount.textContent = gamesOnSelectedDay.length;
             }
 
-            /**
-             * Rendu de l'historique des games
-             */
             function renderGamesHistoryList() {
                 if (historyFilterMode === 'day') {
                     filterGamesDay.className = 'px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-yellow-400 text-amber-950 cursor-pointer';
@@ -1589,8 +1600,7 @@
                 if (filtered.length === 0) {
                     gamesHistoryList.innerHTML = `
                         <div class="text-center py-6 px-3 rounded-xl bg-[#150833]/70 border border-purple-800/50 text-xs text-purple-300 font-bold">
-                            Aucune game enregistrée ${historyFilterMode === 'day' ? 'pour ce jour' : 'pour le moment'}.<br/>
-                            <span class="text-purple-400 font-normal">Clique sur « Démarrer une game » avant de lancer ta partie !</span>
+                            Aucune game enregistrée ${historyFilterMode === 'day' ? 'pour ce jour' : 'pour le moment'}.
                         </div>
                     `;
                     return;
@@ -1620,19 +1630,16 @@
                 }).join('');
             }
 
-            // Événements principaux
             btnGameToggle.addEventListener('click', toggleGameSession);
             btnPlus.addEventListener('click', (e) => increment(e));
             btnMinus.addEventListener('click', () => decrement());
 
-            // Modale Statistiques
             btnOpenStats.addEventListener('click', () => {
                 selectedDateKey = getDateKey(new Date());
                 currentCalDate = new Date();
                 renderStatsView();
                 statsModal.classList.add('open');
             });
-
             btnCloseStats.addEventListener('click', () => statsModal.classList.remove('open'));
             statsModal.addEventListener('click', (e) => {
                 if (e.target === statsModal) statsModal.classList.remove('open');
@@ -1642,7 +1649,6 @@
                 currentCalDate = new Date(currentCalDate.getFullYear(), currentCalDate.getMonth() - 1, 1);
                 renderCalendar();
             });
-
             calNextMonth.addEventListener('click', () => {
                 currentCalDate = new Date(currentCalDate.getFullYear(), currentCalDate.getMonth() + 1, 1);
                 renderCalendar();
@@ -1652,13 +1658,11 @@
                 historyFilterMode = 'day';
                 renderGamesHistoryList();
             });
-
             filterGamesAll.addEventListener('click', () => {
                 historyFilterMode = 'all';
                 renderGamesHistoryList();
             });
 
-            // Son
             btnToggleSound.addEventListener('click', () => {
                 soundEnabled = !soundEnabled;
                 soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
@@ -1666,7 +1670,6 @@
                 if (soundEnabled) playSound('plus');
             });
 
-            // Restauration / Import JSON
             if (importFile) {
                 importFile.addEventListener('change', (event) => {
                     const fileReader = new FileReader();
@@ -1675,33 +1678,23 @@
                         fileReader.onload = async (e) => {
                             try {
                                 const imported = JSON.parse(e.target.result);
-                                
                                 if (typeof imported.totalChests === 'undefined') {
-                                    alert("Le fichier de sauvegarde est invalide.");
+                                    alert("Fichier invalide.");
                                     return;
                                 }
-
-                                if (confirm(`Restaurer cette sauvegarde ? (${imported.totalChests} coffres et ${imported.gamesHistory ? imported.gamesHistory.length : 0} games trouvés). Cela va remplacer les données actuelles.`)) {
+                                if (confirm(`Restaurer cette sauvegarde (${imported.totalChests} coffres) ?`)) {
                                     totalChests = imported.totalChests || 0;
                                     totalGames = imported.totalGames || 0;
                                     dailyCounts = imported.dailyCounts || {};
                                     gamesHistory = imported.gamesHistory || [];
-
+                                    if (imported.rewardsState) rewardsState = imported.rewardsState;
                                     await saveSummaryToCloud();
-                                    
-                                    if (gamesHistory.length > 0 && db && currentUser) {
-                                        for (const g of gamesHistory) {
-                                            await saveGameRecordToCloud(g);
-                                        }
-                                    }
-
                                     updateMainDisplay('plus');
-                                    alert("Données et historique restaurés avec succès !");
+                                    alert("Restauration réussie !");
                                     renderStatsView();
                                 }
                             } catch (err) {
-                                console.error("Erreur lecture fichier:", err);
-                                alert("Erreur lors de la lecture du fichier de sauvegarde.");
+                                alert("Erreur de lecture du fichier.");
                             }
                             importFile.value = "";
                         };
@@ -1709,7 +1702,6 @@
                 });
             }
 
-            // Modale Saisie / Reset
             function openModal(mode) {
                 modalMode = mode;
                 if (mode === 'edit') {
@@ -1718,21 +1710,16 @@
                     modalInput.style.display = 'block';
                     modalInput.value = totalChests;
                     customModal.classList.add('open');
-                    setTimeout(() => {
-                        modalInput.focus();
-                        modalInput.select();
-                    }, 50);
+                    setTimeout(() => { modalInput.focus(); modalInput.select(); }, 50);
                 } else if (mode === 'reset') {
                     modalTitle.textContent = 'Réinitialiser le total ?';
-                    modalDesc.textContent = 'Le compteur global (' + totalChests.toLocaleString('fr-FR') + ') sera remis à zéro.';
+                    modalDesc.textContent = 'Le compteur global sera remis à zéro.';
                     modalInput.style.display = 'none';
                     customModal.classList.add('open');
                 }
             }
 
-            function closeModal() {
-                customModal.classList.remove('open');
-            }
+            function closeModal() { customModal.classList.remove('open'); }
 
             btnEdit.addEventListener('click', () => openModal('edit'));
             numberWrapper.addEventListener('click', () => openModal('edit'));
@@ -1742,9 +1729,7 @@
             });
 
             modalCancel.addEventListener('click', closeModal);
-            customModal.addEventListener('click', (e) => {
-                if (e.target === customModal) closeModal();
-            });
+            customModal.addEventListener('click', (e) => { if (e.target === customModal) closeModal(); });
 
             modalConfirm.addEventListener('click', () => {
                 if (modalMode === 'edit') {
@@ -1762,18 +1747,8 @@
                 closeModal();
             });
 
-            modalInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    modalConfirm.click();
-                } else if (e.key === 'Escape') {
-                    closeModal();
-                }
-            });
-
-            // Raccourcis clavier
             document.addEventListener('keydown', (e) => {
-                if (customModal.classList.contains('open') || statsModal.classList.contains('open')) return;
+                if (customModal.classList.contains('open') || statsModal.classList.contains('open') || rewardsModal.classList.contains('open')) return;
 
                 if (e.code === 'Space' || e.key === '+' || e.key === 'ArrowUp') {
                     e.preventDefault();
@@ -1790,7 +1765,6 @@
                 }
             });
 
-            // Démarrage
             updateMainDisplay();
             await initFirebase();
         });
