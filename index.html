@@ -867,7 +867,7 @@
                 <div class="stat-box col-span-2 sm:col-span-1">
                     <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Cette semaine</div>
                     <div id="statWeek" class="stat-box-value">0</div>
-                    <div class="text-[10px] text-purple-400 font-bold">coffres (Lun–Dim)</div>
+                    <div class="text-[10px] text-purple-400 font-bold">Dim 15h – Dim 14h59</div>
                 </div>
                 <div class="stat-box">
                     <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Games faites</div>
@@ -1043,6 +1043,36 @@
         }
 
         /**
+         * Calcule la plage de la semaine personnalisée : Dimanche 15h00 -> Dimanche suivant 14h59:59.999
+         */
+        function getCustomWeekBounds(now = new Date()) {
+            const dayOfWeek = now.getDay(); // 0 = Dimanche, 1 = Lundi, ..., 6 = Samedi
+            const weekStart = new Date(now);
+            weekStart.setHours(15, 0, 0, 0);
+
+            if (dayOfWeek === 0) {
+                // Si on est dimanche avant 15h00, la semaine a commencé le dimanche précédent à 15h00
+                if (now.getHours() < 15) {
+                    weekStart.setDate(weekStart.getDate() - 7);
+                }
+            } else {
+                // Sinon, on remonte au dimanche précédent à 15h00
+                weekStart.setDate(weekStart.getDate() - dayOfWeek);
+            }
+
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            weekEnd.setHours(14, 59, 59, 999);
+
+            return {
+                startMs: weekStart.getTime(),
+                endMs: weekEnd.getTime(),
+                startDate: weekStart,
+                endDate: weekEnd
+            };
+        }
+
+        /**
          * Initialisation Firebase & Gestionnaire principal (Serveur Cloud)
          */
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1105,6 +1135,7 @@
             let totalChests = 0;
             let totalGames = 0;
             let dailyCounts = {}; // { "YYYY-MM-DD": number }
+            let chestTimestamps = []; // Horodatages précis (ms) des coffres ouverts
             let gamesHistory = []; // Liste des parties terminées
 
             // État de la game en cours
@@ -1216,6 +1247,7 @@
                         totalChests,
                         totalGames,
                         dailyCounts,
+                        chestTimestamps,
                         updatedAt: Date.now()
                     }, { merge: true });
                 } catch (err) {
@@ -1274,6 +1306,9 @@
                                 if (typeof data.totalGames === 'number') totalGames = data.totalGames;
                                 if (data.dailyCounts && typeof data.dailyCounts === 'object') {
                                     dailyCounts = data.dailyCounts;
+                                }
+                                if (Array.isArray(data.chestTimestamps)) {
+                                    chestTimestamps = data.chestTimestamps;
                                 }
                                 updateMainDisplay();
                                 if (statsModal.classList.contains('open')) {
@@ -1437,9 +1472,11 @@
              * Ajouter (+1) ou retirer (-1) un coffre (Mise à jour serveur immédiate)
              */
             function increment(event) {
-                const todayKey = getDateKey(new Date());
+                const nowMs = Date.now();
+                const todayKey = getDateKey(new Date(nowMs));
                 totalChests += 1;
                 dailyCounts[todayKey] = (dailyCounts[todayKey] || 0) + 1;
+                chestTimestamps.push(nowMs);
 
                 if (inGame) {
                     currentGameChests += 1;
@@ -1462,6 +1499,9 @@
                 totalChests -= 1;
                 if ((dailyCounts[todayKey] || 0) > 0) {
                     dailyCounts[todayKey] -= 1;
+                }
+                if (chestTimestamps.length > 0) {
+                    chestTimestamps.pop();
                 }
 
                 if (inGame && currentGameChests > 0) {
@@ -1486,16 +1526,50 @@
                 yesterdayDate.setDate(now.getDate() - 1);
                 const yesterdayKey = getDateKey(yesterdayDate);
 
-                const dayOfWeek = now.getDay();
-                const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                const mondayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
+                // Calcul de la semaine : Dimanche 15h00 -> Dimanche suivant 14h59:59.999
+                const { startMs, endMs, startDate } = getCustomWeekBounds(now);
                 let weekTotal = 0;
 
-                for (let i = 0; i < 7; i++) {
-                    const d = new Date(mondayDate);
-                    d.setDate(mondayDate.getDate() + i);
+                // 1) Compter les coffres horodatés dans l'intervalle exact [Dim 15h00 -> Dim suivant 14h59]
+                for (const ts of chestTimestamps) {
+                    if (ts >= startMs && ts <= endMs) {
+                        weekTotal += 1;
+                    }
+                }
+
+                // 2) Rétrocompatibilité avec les anciens jours enregistrés sans horodatage (dailyCounts)
+                const stampedCountByDay = {};
+                for (const ts of chestTimestamps) {
+                    if (ts >= startMs && ts <= endMs) {
+                        const k = getDateKey(new Date(ts));
+                        stampedCountByDay[k] = (stampedCountByDay[k] || 0) + 1;
+                    }
+                }
+
+                for (let i = 0; i < 8; i++) {
+                    const d = new Date(startDate);
+                    d.setDate(startDate.getDate() + i);
                     const k = getDateKey(d);
-                    weekTotal += (dailyCounts[k] || 0);
+                    const dayStored = dailyCounts[k] || 0;
+                    const dayStamped = stampedCountByDay[k] || 0;
+
+                    if (dayStored > dayStamped) {
+                        const missingFromTimestamps = dayStored - dayStamped;
+                        if (i === 0) {
+                            // Premier dimanche (début à 15h) : si on n'a pas l'heure exacte, on inclut sauf si c'est aujourd'hui avant 15h
+                            if (!(k === todayKey && now.getHours() < 15)) {
+                                weekTotal += missingFromTimestamps;
+                            }
+                        } else if (i === 7) {
+                            // Dimanche de fin (jusqu'à 14h59) : si on n'a pas l'heure exacte et qu'on est aujourd'hui avant 15h
+                            if (k === todayKey && now.getHours() < 15) {
+                                weekTotal += missingFromTimestamps;
+                            }
+                        } else {
+                            // Lundi à Samedi : toute la journée est dans la semaine Dim 15h -> Dim 14h59
+                            weekTotal += missingFromTimestamps;
+                        }
+                    }
                 }
 
                 statToday.textContent = (dailyCounts[todayKey] || 0).toLocaleString('fr-FR');
@@ -1687,6 +1761,7 @@
                                     totalChests = imported.totalChests || 0;
                                     totalGames = imported.totalGames || 0;
                                     dailyCounts = imported.dailyCounts || {};
+                                    chestTimestamps = Array.isArray(imported.chestTimestamps) ? imported.chestTimestamps : [];
                                     gamesHistory = imported.gamesHistory || [];
 
                                     await saveSummaryToCloud();
