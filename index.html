@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Compteur de Coffres Ouverts - Style Fortnite</title>
+    <!-- Tailwind CSS pour la mise en page réactive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Polices style Fortnite (Lilita One & Montserrat ExtraBold) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --banner-bg-top: #261254;
+            --banner-bg-bottom: #150830;
+            --banner-border: #7642ff;
+            --gold-light: #fff038;
+            --gold-mid: #ffd000;
+            --gold-dark: #ff9d00;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            background: radial-gradient(circle at 50% 25%, #1c1438 0%, #0b0817 65%, #06040d 100%);
+            font-family: 'Montserrat', sans-serif;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            overflow-x: hidden;
+            padding: 1.25rem 1rem 2rem;
+        }
+
+        /* Effet de grille subtil en arrière-plan façon lobby Fortnite */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(118, 66, 255, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 66, 255, 0.06) 1px, transparent 1px);
+            background-size: 36px 36px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* =========================================================
+           BANNIÈRE COMPTEUR PRINCIPALE (COFFRE FIXÉ À GAUCHE)
+           ========================================================= */
+        .fortnite-banner {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            background: linear-gradient(180deg, var(--banner-bg-top) 0%, var(--banner-bg-bottom) 100%);
+            border: 3.5px solid var(--banner-border);
+            border-radius: 22px;
+            box-shadow: 
+                0 14px 35px rgba(0, 0, 0, 0.65),
+                0 0 25px rgba(118, 66, 255, 0.35),
+                inset 0 2px 12px rgba(167, 130, 255, 0.25);
+            padding: 1.05rem 1.4rem;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1.25rem;
+            z-index: 10;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .fortnite-banner.pulse-glow {
+            box-shadow: 
+                0 14px 35px rgba(0, 0, 0, 0.65),
+                0 0 40px rgba(255, 208, 0, 0.55),
+                inset 0 2px 16px rgba(255, 225, 100, 0.35);
+            border-color: #ffd000;
+        }
+
+        /* Zone texte et chiffre à droite du coffre */
+        .counter-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            text-align: left;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .counter-title {
+            font-family: 'Lilita One', 'Montserrat', sans-serif;
+            font-size: clamp(1.1rem, 4vw, 1.8rem);
+            letter-spacing: 0.06em;
+            color: #ffffff;
+            text-transform: uppercase;
+            line-height: 1.05;
+            text-shadow: 0 3px 0 rgba(10, 4, 28, 0.85);
+            margin-bottom: 0.15rem;
+            white-space: nowrap;
+        }
+
+        .counter-number-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .counter-number {
+            font-family: 'Lilita One', 'Montserrat', sans-serif;
+            font-size: clamp(3.3rem, 13vw, 5.4rem);
+            line-height: 0.95;
+            letter-spacing: 0.02em;
+            background: linear-gradient(180deg, #fff55a 0%, #ffd000 52%, #ff9900 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 4px 0 #4d2200) drop-shadow(0 8px 16px rgba(255, 174, 0, 0.35));
+            transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-block;
+        }
+
+        .counter-number.pop {
+            transform: scale(1.13);
+        }
+
+        .counter-number.shrink {
+            transform: scale(0.91);
+        }
+
+        /* Badges de games sous le compteur */
+        .games-subbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.45rem;
+        }
+
+        .games-total-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(16, 7, 41, 0.85);
+            border: 1.5px solid rgba(139, 92, 246, 0.5);
+            border-radius: 999px;
+            padding: 0.2rem 0.65rem;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #d8c8ff;
+            letter-spacing: 0.04em;
+        }
+
+        .live-game-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.22), rgba(5, 150, 105, 0.32));
+            border: 1.5px solid #34d399;
+            border-radius: 999px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.72rem;
+            font-weight: 900;
+            color: #6ee7b7;
+            letter-spacing: 0.04em;
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.28);
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: #34d399;
+            animation: pulseDot 1.2s infinite ease-in-out;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(0.9); opacity: 0.65; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Conteneur du coffre SVG */
+        .chest-container {
+            position: relative;
+            width: clamp(118px, 30vw, 172px);
+            height: clamp(118px, 30vw, 172px);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.6));
+            transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .chest-container.chest-bounce {
+            transform: scale(1.1) rotate(-3deg);
+        }
+
+        /* Halo doré derrière le coffre */
+        .chest-aura {
+            position: absolute;
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 208, 0, 0.35) 0%, rgba(168, 85, 247, 0.15) 55%, transparent 75%);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .chest-container.chest-bounce .chest-aura {
+            transform: scale(1.3);
+            background: radial-gradient(circle, rgba(255, 230, 50, 0.65) 0%, rgba(255, 150, 0, 0.25) 60%, transparent 80%);
+        }
+
+        /* =========================================================
+           BOUTONS D'ACTION EN BAS
+           ========================================================= */
+        .controls-area {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            z-index: 10;
+            margin-top: auto;
+            margin-bottom: auto;
+            padding: 0.75rem 0;
+        }
+
+        /* Bouton Démarrer / Fin de la game */
+        .btn-game-state {
+            width: 100%;
+            max-width: 310px;
+            padding: 0.85rem 1.25rem;
+            border-radius: 18px;
+            font-family: 'Lilita One', 'Montserrat', sans-serif;
+            font-size: 1.25rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.12s ease, filter 0.15s ease;
+            touch-action: manipulation;
+        }
+
+        .btn-game-start {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 60%, #0369a1 100%);
+            border: 3px solid #bae6fd;
+            color: #ffffff;
+            text-shadow: 0 2px 0 rgba(7, 45, 74, 0.8);
+            box-shadow: 0 6px 0 #074166, 0 12px 22px rgba(2, 132, 199, 0.35);
+        }
+
+        .btn-game-end {
+            background: linear-gradient(180deg, #34d399 0%, #059669 60%, #047857 100%);
+            border: 3px solid #a7f3d0;
+            color: #ffffff;
+            text-shadow: 0 2px 0 rgba(4, 56, 39, 0.85);
+            box-shadow: 0 6px 0 #034d36, 0 12px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-game-state:hover {
+            filter: brightness(1.07);
+        }
+
+        .btn-game-state:active {
+            transform: translateY(4px);
+        }
+
+        /* Grand Bouton + style Fortnite */
+        .btn-plus {
+            position: relative;
+            width: min(210px, 56vw);
+            height: min(210px, 56vw);
+            border-radius: 36px;
+            border: 4px solid #fff59d;
+            background: linear-gradient(180deg, #ffea28 0%, #ffc400 55%, #ff9500 100%);
+            box-shadow: 
+                0 12px 0 #9e5200,
+                0 20px 35px rgba(255, 174, 0, 0.4),
+                inset 0 4px 10px rgba(255, 255, 255, 0.75);
+            color: #2c1200;
+            font-family: 'Lilita One', sans-serif;
+            font-size: clamp(5.5rem, 20vw, 7.5rem);
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+            touch-action: manipulation;
+        }
+
+        .btn-plus:hover {
+            filter: brightness(1.06);
+        }
+
+        .btn-plus:active, .btn-plus.active-press {
+            transform: translateY(8px);
+            box-shadow: 
+                0 4px 0 #9e5200,
+                0 8px 18px rgba(255, 174, 0, 0.35),
+                inset 0 2px 6px rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-plus-label {
+            position: absolute;
+            bottom: 14px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(66, 28, 0, 0.75);
+        }
+
+        /* Petit Bouton - discret en dessous */
+        .btn-minus {
+            position: relative;
+            width: 84px;
+            height: 52px;
+            border-radius: 16px;
+            border: 2.5px solid #6b42d6;
+            background: linear-gradient(180deg, #2d1863 0%, #1b0d40 100%);
+            box-shadow: 
+                0 5px 0 #0e0624,
+                0 8px 16px rgba(0, 0, 0, 0.45),
+                inset 0 2px 5px rgba(155, 118, 255, 0.3);
+            color: #e2d6ff;
+            font-family: 'Lilita One', sans-serif;
+            font-size: 2.1rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .btn-minus:hover:not(:disabled) {
+            border-color: #9673ff;
+            color: #ffffff;
+        }
+
+        .btn-minus:active:not(:disabled), .btn-minus.active-press {
+            transform: translateY(4px);
+            box-shadow: 
+                0 1px 0 #0e0624,
+                0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-minus:disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+        }
+
+        /* Particule flottante +1 */
+        .floating-plus {
+            position: fixed;
+            pointer-events: none;
+            font-family: 'Lilita One', sans-serif;
+            font-size: 2rem;
+            color: #fff24d;
+            text-shadow: 0 3px 0 #592600, 0 0 12px rgba(255, 208, 0, 0.8);
+            z-index: 50;
+            animation: floatUpFade 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes floatUpFade {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(0.7);
+            }
+            40% {
+                opacity: 1;
+                transform: translate(-50%, -38px) scale(1.15);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -75px) scale(0.95);
+            }
+        }
+
+        /* Barre d'outils discrète en bas */
+        .toolbar-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+            z-index: 10;
+        }
+
+        .tool-pill {
+            background: rgba(34, 18, 74, 0.75);
+            border: 1.5px solid rgba(118, 66, 255, 0.45);
+            color: #c8b8f5;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .tool-pill:hover {
+            background: rgba(54, 30, 112, 0.9);
+            border-color: #8f66ff;
+            color: #ffffff;
+        }
+
+        /* Modale personnalisée (remplace alert/confirm) */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 3, 16, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 100;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background: linear-gradient(180deg, #261254 0%, #150830 100%);
+            border: 3px solid #7642ff;
+            border-radius: 20px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+        }
+
+        /* Modale Statistiques Complète */
+        .stats-modal-card {
+            background: linear-gradient(180deg, #22104a 0%, #110629 100%);
+            border: 3px solid #7642ff;
+            border-radius: 24px;
+            padding: 1.25rem;
+            width: 100%;
+            max-width: 680px;
+            max-height: 90dvh;
+            overflow-y: auto;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+        }
+
+        .stat-box {
+            background: rgba(15, 6, 36, 0.82);
+            border: 1.5px solid rgba(118, 66, 255, 0.45);
+            border-radius: 16px;
+            padding: 0.75rem 0.65rem;
+            text-align: center;
+        }
+
+        .stat-box-value {
+            font-family: 'Lilita One', sans-serif;
+            font-size: 1.75rem;
+            line-height: 1.1;
+            background: linear-gradient(180deg, #fff55a 0%, #ffd000 60%, #ff9900 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Calendrier mensuel interactif */
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 0.32rem;
+        }
+
+        .cal-day-btn {
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            border: 1.5px solid rgba(118, 66, 255, 0.3);
+            background: rgba(25, 11, 56, 0.75);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #d8ccff;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            padding: 2px;
+        }
+
+        .cal-day-btn:hover {
+            border-color: #a78bfa;
+            background: rgba(65, 32, 138, 0.85);
+        }
+
+        .cal-day-btn.has-data {
+            border-color: rgba(255, 208, 0, 0.55);
+            background: rgba(255, 208, 0, 0.12);
+        }
+
+        .cal-day-btn.selected {
+            border-color: #ffd000;
+            background: linear-gradient(180deg, rgba(255, 208, 0, 0.32), rgba(255, 153, 0, 0.22));
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(255, 208, 0, 0.35);
+        }
+
+        .cal-day-count {
+            font-size: 0.62rem;
+            font-weight: 900;
+            color: #ffd000;
+            line-height: 1;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <!-- =========================================================
+         HAUT : BANNIÈRE COMPTEUR STYLE FORTNITE (COFFRE À GAUCHE)
+         ========================================================= -->
+    <header class="w-full flex flex-col items-center pt-1 sm:pt-2">
+        <div id="banner" class="fortnite-banner" role="region" aria-label="Compteur de coffres ouverts">
+            
+            <!-- Coffre Pirate fixé à GAUCHE -->
+            <div id="chestContainer" class="chest-container">
+                <div class="chest-aura"></div>
+                <svg viewBox="0 0 220 210" class="w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Dégradés Or -->
+                        <linearGradient id="goldMain" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFF263"/>
+                            <stop offset="40%" stop-color="#FFC800"/>
+                            <stop offset="80%" stop-color="#E08600"/>
+                            <stop offset="100%" stop-color="#9E4F00"/>
+                        </linearGradient>
+                        <linearGradient id="goldDark" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#D97B00"/>
+                            <stop offset="100%" stop-color="#783700"/>
+                        </linearGradient>
+                        <linearGradient id="goldHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#FFF9A6"/>
+                            <stop offset="100%" stop-color="#FFB700"/>
+                        </linearGradient>
+
+                        <!-- Dégradés Bois -->
+                        <linearGradient id="woodPlank" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#9E5020"/>
+                            <stop offset="50%" stop-color="#753510"/>
+                            <stop offset="100%" stop-color="#4A1E06"/>
+                        </linearGradient>
+
+                        <!-- Dégradé Crâne Pierre/Os -->
+                        <linearGradient id="skullGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#FFFFFF"/>
+                            <stop offset="60%" stop-color="#D9D9E3"/>
+                            <stop offset="100%" stop-color="#9E9EB0"/>
+                        </linearGradient>
+
+                        <!-- Gemmes Magenta / Violette -->
+                        <radialGradient id="magentaGem" cx="35%" cy="35%" r="65%">
+                            <stop offset="0%" stop-color="#FF99F8"/>
+                            <stop offset="45%" stop-color="#E619D8"/>
+                            <stop offset="85%" stop-color="#8A0080"/>
+                            <stop offset="100%" stop-color="#4D0047"/>
+                        </radialGradient>
+
+                        <!-- Gemme Turquoise Sommet -->
+                        <radialGradient id="cyanGem" cx="40%" cy="30%" r="65%">
+                            <stop offset="0%" stop-color="#B8FFFF"/>
+                            <stop offset="50%" stop-color="#00D8E6"/>
+                            <stop offset="100%" stop-color="#006B7A"/>
+                        </radialGradient>
+
+                        <!-- Yeux Rubis Rouge-Orangé -->
+                        <radialGradient id="rubyEye" cx="40%" cy="35%" r="65%">
+                            <stop offset="0%" stop-color="#FFF066"/>
+                            <stop offset="35%" stop-color="#FF4500"/>
+                            <stop offset="80%" stop-color="#B80000"/>
+                            <stop offset="100%" stop-color="#5C0000"/>
+                        </radialGradient>
+
+                        <!-- Mousse Verte -->
+                        <linearGradient id="mossGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#6DD42C"/>
+                            <stop offset="100%" stop-color="#2D6E0E"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Ombre au sol -->
+                    <ellipse cx="110" cy="193" rx="82" ry="11" fill="rgba(0,0,0,0.45)"/>
+
+                    <!-- Côté 3D droit du coffre (profondeur) -->
+                    <path d="M162 42 C185 45, 198 72, 198 106 L195 174 L165 186 L162 42 Z" fill="url(#goldDark)" stroke="#4A2200" stroke-width="2.5"/>
+                    <path d="M168 58 C182 62, 188 80, 188 104 L186 164 L168 172 Z" fill="#3D1905"/>
+
+                    <!-- Corps principal du coffre en bois -->
+                    <path d="M34 95 L168 95 L165 184 L37 184 Z" fill="url(#woodPlank)" stroke="#3B1704" stroke-width="3"/>
+                    <!-- Lignes des planches de bois -->
+                    <line x1="36" y1="125" x2="166" y2="125" stroke="#361403" stroke-width="3"/>
+                    <line x1="36" y1="155" x2="166" y2="155" stroke="#361403" stroke-width="3"/>
+
+                    <!-- Couvercle bombé en bois -->
+                    <path d="M30 96 C30 50, 56 34, 101 34 C146 34, 172 50, 172 96 Z" fill="url(#woodPlank)" stroke="#3B1704" stroke-width="3"/>
+                    <path d="M38 68 Q101 64 164 68" stroke="#361403" stroke-width="3" fill="none"/>
+
+                    <!-- Armatures dorées latérales (Couvercle) -->
+                    <path d="M26 98 C26 52, 46 33, 72 32 L78 55 C58 58, 50 74, 49 98 Z" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
+                    <path d="M176 98 C176 52, 156 33, 130 32 L124 55 C144 58, 152 74, 153 98 Z" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
+
+                    <!-- Barre dorée horizontale du milieu -->
+                    <rect x="24" y="92" width="154" height="22" rx="5" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
+                    <!-- Vis dorées -->
+                    <circle cx="38" cy="103" r="5" fill="url(#goldHighlight)" stroke="#522600" stroke-width="1.5"/>
+                    <line x1="35" y1="101" x2="41" y2="105" stroke="#522600" stroke-width="1.5"/>
+                    <circle cx="164" cy="103" r="5" fill="url(#goldHighlight)" stroke="#522600" stroke-width="1.5"/>
+                    <line x1="161" y1="105" x2="167" y2="101" stroke="#522600" stroke-width="1.5"/>
+
+                    <!-- Montants et coins dorés inférieurs -->
+                    <path d="M28 114 L52 114 L54 186 L25 186 L25 166 L31 158 Z" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
+                    <path d="M174 114 L150 114 L148 186 L177 186 L177 166 L171 158 Z" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
+                    <!-- Base dorée centrale -->
+                    <rect x="52" y="172" width="98" height="14" rx="3" fill="url(#goldDark)" stroke="#522600" stroke-width="2"/>
+
+                    <!-- Socle doré et Gemme Turquoise au sommet -->
+                    <polygon points="78,34 101,22 124,34 116,46 86,46" fill="url(#goldMain)" stroke="#522600" stroke-width="2.5"/>
+                    <polygon points="86,32 101,24 116,32 109,40 93,40" fill="url(#cyanGem)" stroke="#00444D" stroke-width="1.8"/>
+                    <polygon points="94,29 101,26 106,30 100,33" fill="#E0FFFF" opacity="0.85"/>
+
+                    <!-- Touches de mousse verte (fidèle à la photo) -->
+                    <path d="M55 54 Q66 46 76 58 Q68 65 56 61 Z" fill="url(#mossGrad)" stroke="#1E4D07" stroke-width="1.5"/>
+                    <path d="M126 52 Q139 45 148 58 Q138 66 125 60 Z" fill="url(#mossGrad)" stroke="#1E4D07" stroke-width="1.5"/>
+                    <path d="M62 166 Q73 160 80 172 L60 174 Z" fill="url(#mossGrad)" stroke="#1E4D07" stroke-width="1.5"/>
+
+                    <!-- =====================================================
+                         CRÂNE SERRURE CENTRAL
+                         ===================================================== -->
+                    <g id="skullLock">
+                        <!-- Contour principal du crâne -->
+                        <path d="M76 74 
+                                 L88 62 
+                                 L114 62 
+                                 L126 74 
+                                 L128 106 
+                                 L118 116 
+                                 L118 136 
+                                 L84 136 
+                                 L84 116 
+                                 L74 106 Z" 
+                              fill="url(#skullGrad)" stroke="#333042" stroke-width="3" stroke-linejoin="round"/>
+                        
+                        <!-- Fissures et ombres du crâne -->
+                        <path d="M84 65 L89 74 M117 65 L112 73" stroke="#7A788C" stroke-width="2" stroke-linecap="round"/>
+
+                        <!-- Orbite & Oeil Rubis Gauche -->
+                        <polygon points="81,87 90,81 97,87 95,97 86,98 80,93" fill="#2A0808"/>
+                        <polygon points="83,88 90,83 95,88 93,95 86,96 82,92" fill="url(#rubyEye)" stroke="#FF9E44" stroke-width="1"/>
+                        <circle cx="87" cy="87" r="2" fill="#FFF9B0"/>
+
+                        <!-- Orbite & Oeil Rubis Droit -->
+                        <polygon points="105,87 112,81 121,87 122,93 116,98 107,97" fill="#2A0808"/>
+                        <polygon points="107,88 112,83 119,88 120,92 115,96 109,95" fill="url(#rubyEye)" stroke="#FF9E44" stroke-width="1"/>
+                        <circle cx="112" cy="87" r="2" fill="#FFF9B0"/>
+
+                        <!-- Trou de serrure au niveau du nez -->
+                        <circle cx="101" cy="102" r="4" fill="#181226"/>
+                        <polygon points="99,104 103,104 105,113 97,113" fill="#181226"/>
+
+                        <!-- Dents du crâne -->
+                        <rect x="85" y="121" width="32" height="14" rx="2" fill="#E6E6F0" stroke="#333042" stroke-width="2"/>
+                        <line x1="91" y1="121" x2="91" y2="135" stroke="#333042" stroke-width="2"/>
+                        <line x1="98" y1="121" x2="98" y2="135" stroke="#333042" stroke-width="2"/>
+                        <line x1="104" y1="121" x2="104" y2="135" stroke="#333042" stroke-width="2"/>
+                        <line x1="111" y1="121" x2="111" y2="135" stroke="#333042" stroke-width="2"/>
+                        <line x1="85" y1="128" x2="117" y2="128" stroke="#333042" stroke-width="1.5"/>
+                    </g>
+
+                    <!-- =====================================================
+                         CHAÎNES DORÉES ENROULÉES (DANS LA BOUCHE DU CRÂNE)
+                         ===================================================== -->
+                    <g stroke="#4D2200" stroke-width="2.2" fill="url(#goldMain)">
+                        <!-- Maillons gauche allant vers la mâchoire -->
+                        <rect x="18" y="136" width="22" height="11" rx="5.5" transform="rotate(-18 29 141)"/>
+                        <rect x="34" y="130" width="24" height="11" rx="5.5" transform="rotate(-24 46 135)"/>
+                        <rect x="52" y="122" width="24" height="11" rx="5.5" transform="rotate(-26 64 127)"/>
+                        <rect x="70" y="114" width="22" height="11" rx="5.5" transform="rotate(-25 81 119)"/>
+
+                        <!-- Maillons droite partant de la mâchoire -->
+                        <rect x="110" y="114" width="22" height="11" rx="5.5" transform="rotate(24 121 119)"/>
+                        <rect x="128" y="122" width="24" height="11" rx="5.5" transform="rotate(26 140 127)"/>
+                        <rect x="146" y="131" width="24" height="11" rx="5.5" transform="rotate(24 158 136)"/>
+                        <rect x="164" y="137" width="23" height="11" rx="5.5" transform="rotate(14 175 142)"/>
+                        <rect x="181" y="131" width="20" height="10" rx="5" transform="rotate(-28 191 136)"/>
+                    </g>
+
+                    <!-- =====================================================
+                         4 GEMMES MAGENTA / VIOLETTES AUX COINS
+                         ===================================================== -->
+                    <!-- Haut Gauche -->
+                    <g transform="translate(52, 54) rotate(-25)">
+                        <ellipse cx="0" cy="0" rx="16" ry="11" fill="url(#goldDark)" stroke="#4D2200" stroke-width="2"/>
+                        <ellipse cx="0" cy="0" rx="12" ry="8" fill="url(#magentaGem)" stroke="#470042" stroke-width="1.5"/>
+                        <ellipse cx="-3" cy="-2" rx="4.5" ry="2.2" fill="#FFD6FC" opacity="0.85"/>
+                    </g>
+
+                    <!-- Haut Droit -->
+                    <g transform="translate(150, 54) rotate(25)">
+                        <ellipse cx="0" cy="0" rx="16" ry="11" fill="url(#goldDark)" stroke="#4D2200" stroke-width="2"/>
+                        <ellipse cx="0" cy="0" rx="12" ry="8" fill="url(#magentaGem)" stroke="#470042" stroke-width="1.5"/>
+                        <ellipse cx="-3" cy="-2" rx="4.5" ry="2.2" fill="#FFD6FC" opacity="0.85"/>
+                    </g>
+
+                    <!-- Bas Gauche -->
+                    <g transform="translate(44, 162) rotate(15)">
+                        <circle cx="0" cy="0" r="14" fill="url(#goldDark)" stroke="#4D2200" stroke-width="2"/>
+                        <polygon points="-8,-6 0,-10 8,-6 10,3 5,9 -5,9 -10,3" fill="url(#magentaGem)" stroke="#470042" stroke-width="1.5"/>
+                        <circle cx="-3" cy="-3" r="2.8" fill="#FFD6FC" opacity="0.85"/>
+                    </g>
+
+                    <!-- Bas Droit -->
+                    <g transform="translate(158, 162) rotate(-15)">
+                        <circle cx="0" cy="0" r="14" fill="url(#goldDark)" stroke="#4D2200" stroke-width="2"/>
+                        <polygon points="-8,-6 0,-10 8,-6 10,3 5,9 -5,9 -10,3" fill="url(#magentaGem)" stroke="#470042" stroke-width="1.5"/>
+                        <circle cx="-3" cy="-3" r="2.8" fill="#FFD6FC" opacity="0.85"/>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Texte et Chiffre à DROITE du coffre -->
+            <div class="counter-info">
+                <div class="counter-title">COFFRES OUVERTS</div>
+                <div id="numberWrapper" class="counter-number-wrapper" title="Cliquer pour ajuster le total">
+                    <span id="counterDisplay" class="counter-number">0</span>
+                </div>
+
+                <!-- Indicateur total des games & badge de game en cours -->
+                <div class="games-subbar">
+                    <div class="games-total-pill">
+                        <span>🎮</span>
+                        <span>GAMES : <strong id="totalGamesDisplay" class="text-yellow-300">0</strong></span>
+                    </div>
+
+                    <div id="liveGameBadge" class="live-game-badge hidden">
+                        <span class="live-dot"></span>
+                        <span>EN GAME : <strong id="sessionChestsDisplay" class="text-white">0</strong> coffre(s) • <span id="sessionTimerDisplay">00:00</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- =========================================================
+         CENTRE / BAS : BOUTONS GAME, + (GRAND) ET - (PETIT)
+         ========================================================= -->
+    <main class="controls-area">
+        <!-- Bouton Démarrer / Fin de la game -->
+        <button id="btnGameToggle" class="btn-game-state btn-game-start" aria-label="Démarrer ou terminer une game">
+            <span id="gameBtnIcon">▶️</span>
+            <span id="gameBtnText">Démarrer une game</span>
+        </button>
+
+        <!-- Grand Bouton + -->
+        <button id="btnPlus" class="btn-plus" aria-label="Ajouter un coffre ouvert">
+            <span>+</span>
+            <span class="btn-plus-label">+1 Coffre</span>
+        </button>
+
+        <!-- Plus petit bouton - en dessous -->
+        <button id="btnMinus" class="btn-minus" aria-label="Retirer un coffre">
+            <span>−</span>
+        </button>
+    </main>
+
+    <!-- =========================================================
+         BARRE D'OPTIONS EN BAS (STATISTIQUES, SON, MODIFIER, RESET)
+         ========================================================= -->
+    <footer class="toolbar-footer">
+        <button id="btnOpenStats" class="tool-pill !border-yellow-400/70 !bg-purple-900/90 !text-yellow-200" title="Voir les statistiques, le calendrier et l'historique des games">
+            <span>📊</span>
+            <span>Statistiques</span>
+        </button>
+
+        <button id="btnToggleSound" class="tool-pill" title="Activer ou couper les effets sonores">
+            <span id="soundIcon">🔊</span>
+            <span id="soundLabel">Son : ON</span>
+        </button>
+
+        <button id="btnEdit" class="tool-pill" title="Modifier manuellement le total">
+            <span>✎</span>
+            <span>Modifier</span>
+        </button>
+
+        <button id="btnReset" class="tool-pill" title="Remettre le compteur à 0">
+            <span>↺</span>
+            <span>Reset</span>
+        </button>
+    </footer>
+
+    <!-- =========================================================
+         MODALE STATISTIQUES, CALENDRIER & HISTORIQUE DES GAMES
+         ========================================================= -->
+    <div id="statsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="statsModalTitle">
+        <div class="stats-modal-card text-left">
+            <div class="flex items-center justify-between border-b border-purple-700/60 pb-3 mb-4">
+                <div>
+                    <h2 id="statsModalTitle" class="text-2xl text-yellow-300 tracking-wide uppercase" style="font-family: 'Lilita One', sans-serif;">
+                        📊 Statistiques & Historique
+                    </h2>
+                    <p id="cloudSyncStatus" class="text-xs text-purple-300 font-bold mt-0.5">
+                        Synchronisation cloud active
+                    </p>
+                </div>
+                <button id="btnCloseStats" class="w-9 h-9 rounded-xl bg-purple-950 border border-purple-600 text-purple-200 font-black hover:bg-purple-800 cursor-pointer flex items-center justify-center">
+                    ✕
+                </button>
+            </div>
+
+            <!-- 5 Cartes récapitulatives -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-5">
+                <div class="stat-box">
+                    <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Aujourd'hui</div>
+                    <div id="statToday" class="stat-box-value">0</div>
+                    <div class="text-[10px] text-purple-400 font-bold">coffres</div>
+                </div>
+                <div class="stat-box">
+                    <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Hier</div>
+                    <div id="statYesterday" class="stat-box-value">0</div>
+                    <div class="text-[10px] text-purple-400 font-bold">coffres</div>
+                </div>
+                <div class="stat-box col-span-2 sm:col-span-1">
+                    <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Cette semaine</div>
+                    <div id="statWeek" class="stat-box-value">0</div>
+                    <div class="text-[10px] text-purple-400 font-bold">coffres (Lun–Dim)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Games faites</div>
+                    <div id="statTotalGames" class="stat-box-value">0</div>
+                    <div class="text-[10px] text-purple-400 font-bold">parties terminées</div>
+                </div>
+                <div class="stat-box">
+                    <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Moyenne / Game</div>
+                    <div id="statAvgPerGame" class="stat-box-value">0.0</div>
+                    <div class="text-[10px] text-purple-400 font-bold">coffres / partie</div>
+                </div>
+                <div class="stat-box">
+                    <div class="text-[11px] font-extrabold uppercase text-purple-300 tracking-wider">Record / Game</div>
+                    <div id="statBestGame" class="stat-box-value">0</div>
+                    <div class="text-[10px] text-purple-400 font-bold">meilleure partie</div>
+                </div>
+            </div>
+
+            <!-- Calendrier Interactif -->
+            <div class="bg-[#150833] border border-purple-700/60 rounded-2xl p-3.5 mb-5">
+                <div class="flex items-center justify-between mb-3">
+                    <button id="calPrevMonth" class="px-3 py-1 rounded-lg bg-purple-900/80 border border-purple-600 text-xs font-black text-white hover:bg-purple-800 cursor-pointer">
+                        ◀
+                    </button>
+                    <div id="calMonthLabel" class="text-sm font-black uppercase tracking-wider text-yellow-300">
+                        Novembre 2026
+                    </div>
+                    <button id="calNextMonth" class="px-3 py-1 rounded-lg bg-purple-900/80 border border-purple-600 text-xs font-black text-white hover:bg-purple-800 cursor-pointer">
+                        ▶
+                    </button>
+                </div>
+
+                <!-- Jours de la semaine -->
+                <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-purple-400 uppercase mb-1.5">
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mer</div>
+                    <div>Jeu</div>
+                    <div>Ven</div>
+                    <div>Sam</div>
+                    <div>Dim</div>
+                </div>
+
+                <!-- Grille des jours -->
+                <div id="calendarDaysGrid" class="cal-grid"></div>
+
+                <!-- Résumé du jour sélectionné -->
+                <div class="mt-3 pt-2.5 border-t border-purple-800/70 flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div>
+                        <span class="text-purple-300 font-bold">Jour sélectionné : </span>
+                        <strong id="selectedDateLabel" class="text-white">--</strong>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-yellow-400/15 border border-yellow-400/50 text-yellow-300 px-2.5 py-0.5 rounded-full font-black">
+                            <span id="selectedDateChests">0</span> coffre(s)
+                        </span>
+                        <span class="bg-purple-500/20 border border-purple-400/40 text-purple-200 px-2.5 py-0.5 rounded-full font-black">
+                            <span id="selectedDateGamesCount">0</span> game(s)
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historique détaillé des games -->
+            <div>
+                <div class="flex items-center justify-between mb-2.5">
+                    <h3 class="text-sm font-black uppercase tracking-wider text-white">
+                        🎮 Historique des games
+                    </h3>
+                    <div class="flex gap-1.5">
+                        <button id="filterGamesDay" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-purple-900/70 border border-purple-600 text-purple-200 cursor-pointer">
+                            Ce jour
+                        </button>
+                        <button id="filterGamesAll" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-yellow-400 text-amber-950 cursor-pointer">
+                            Toutes
+                        </button>
+                    </div>
+                </div>
+
+                <div id="gamesHistoryList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         MODALE DE SAISIE / CONFIRMATION PERSONNALISÉE
+         ========================================================= -->
+    <div id="customModal" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <h2 id="modalTitle" class="text-xl font-black uppercase tracking-wide text-yellow-300 mb-2" style="font-family: 'Lilita One', sans-serif;">
+                Modifier le compteur
+            </h2>
+            <p id="modalDesc" class="text-sm text-purple-200 mb-4">
+                Entre le nombre exact de coffres ouverts :
+            </p>
+            <input 
+                id="modalInput" 
+                type="number" 
+                min="0" 
+                max="9999999" 
+                inputmode="numeric"
+                class="w-full text-center text-3xl font-black py-2.5 px-4 rounded-xl bg-[#120729] border-2 border-[#7642ff] text-yellow-300 focus:outline-none focus:border-yellow-400 mb-5"
+                style="font-family: 'Lilita One', sans-serif;"
+            />
+            <div class="flex gap-3 justify-center">
+                <button id="modalCancel" class="flex-1 py-2.5 px-4 rounded-xl font-extrabold text-sm bg-purple-950 border border-purple-700 text-purple-200 hover:bg-purple-900 cursor-pointer">
+                    Annuler
+                </button>
+                <button id="modalConfirm" class="flex-1 py-2.5 px-4 rounded-xl font-extrabold text-sm bg-gradient-to-b from-yellow-300 to-amber-500 text-amber-950 shadow-md hover:brightness-105 cursor-pointer">
+                    Valider
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, addDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCgoSCwF9MdTBosbtGkXOs-bBLhjlIhf8k",
+
+  authDomain: "coffres-73b1d.firebaseapp.com",
+
+  projectId: "coffres-73b1d",
+
+  storageBucket: "coffres-73b1d.firebasestorage.app",
+
+  messagingSenderId: "727824757356",
+
+  appId: "1:727824757356:web:75c5436d9668596777de49",
+
+  measurementId: "G-3N3RTR8TN3"
+
+};
+
+
+        /**
+         * Utilitaires de dates locales (YYYY-MM-DD, HH:MM, durée)
+         */
+        function getDateKey(dateObj = new Date()) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function formatTimeHHMM(timestamp) {
+            const d = new Date(timestamp);
+            return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function formatDuration(ms) {
+            const totalSec = Math.max(0, Math.floor(ms / 1000));
+            const mins = Math.floor(totalSec / 60);
+            const secs = totalSec % 60;
+            if (mins >= 60) {
+                const hrs = Math.floor(mins / 60);
+                const remMins = mins % 60;
+                return `${hrs}h ${String(remMins).padStart(2, '0')}m`;
+            }
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function formatDateFr(dateKey) {
+            const [y, m, d] = dateKey.split('-').map(Number);
+            const dateObj = new Date(y, m - 1, d);
+            return dateObj.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        /**
+         * Initialisation Firebase & Gestionnaire principal
+         */
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Éléments DOM principaux
+            const banner = document.getElementById('banner');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const numberWrapper = document.getElementById('numberWrapper');
+            const chestContainer = document.getElementById('chestContainer');
+            const totalGamesDisplay = document.getElementById('totalGamesDisplay');
+            const liveGameBadge = document.getElementById('liveGameBadge');
+            const sessionChestsDisplay = document.getElementById('sessionChestsDisplay');
+            const sessionTimerDisplay = document.getElementById('sessionTimerDisplay');
+
+            const btnGameToggle = document.getElementById('btnGameToggle');
+            const gameBtnIcon = document.getElementById('gameBtnIcon');
+            const gameBtnText = document.getElementById('gameBtnText');
+            const btnPlus = document.getElementById('btnPlus');
+            const btnMinus = document.getElementById('btnMinus');
+
+            const btnOpenStats = document.getElementById('btnOpenStats');
+            const btnToggleSound = document.getElementById('btnToggleSound');
+            const soundIcon = document.getElementById('soundIcon');
+            const soundLabel = document.getElementById('soundLabel');
+            const btnEdit = document.getElementById('btnEdit');
+            const btnReset = document.getElementById('btnReset');
+
+            // Modale Statistiques
+            const statsModal = document.getElementById('statsModal');
+            const btnCloseStats = document.getElementById('btnCloseStats');
+            const cloudSyncStatus = document.getElementById('cloudSyncStatus');
+            const statToday = document.getElementById('statToday');
+            const statYesterday = document.getElementById('statYesterday');
+            const statWeek = document.getElementById('statWeek');
+            const statTotalGames = document.getElementById('statTotalGames');
+            const statAvgPerGame = document.getElementById('statAvgPerGame');
+            const statBestGame = document.getElementById('statBestGame');
+
+            const calPrevMonth = document.getElementById('calPrevMonth');
+            const calNextMonth = document.getElementById('calNextMonth');
+            const calMonthLabel = document.getElementById('calMonthLabel');
+            const calendarDaysGrid = document.getElementById('calendarDaysGrid');
+            const selectedDateLabel = document.getElementById('selectedDateLabel');
+            const selectedDateChests = document.getElementById('selectedDateChests');
+            const selectedDateGamesCount = document.getElementById('selectedDateGamesCount');
+
+            const filterGamesDay = document.getElementById('filterGamesDay');
+            const filterGamesAll = document.getElementById('filterGamesAll');
+            const gamesHistoryList = document.getElementById('gamesHistoryList');
+
+            // Modale Saisie / Reset
+            const customModal = document.getElementById('customModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDesc = document.getElementById('modalDesc');
+            const modalInput = document.getElementById('modalInput');
+            const modalCancel = document.getElementById('modalCancel');
+            const modalConfirm = document.getElementById('modalConfirm');
+
+            // État applicatif
+            let totalChests = 0;
+            let totalGames = 0;
+            let dailyCounts = {}; // { "YYYY-MM-DD": number }
+            let gamesHistory = []; // Liste des parties terminées
+
+            // État de la game en cours
+            let inGame = false;
+            let currentGameStart = null;
+            let currentGameChests = 0;
+            let timerInterval = null;
+
+            // État Calendrier & Filtres
+            let currentCalDate = new Date();
+            let selectedDateKey = getDateKey(new Date());
+            let historyFilterMode = 'all'; // 'all' ou 'day'
+
+            let soundEnabled = true;
+            let modalMode = 'edit';
+            let audioCtx = null;
+
+            // Firebase Refs
+            let db = null;
+            let auth = null;
+            let currentUser = null;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'fortnite-chest-tracker';
+
+            /**
+             * Synthétiseur sonore Web Audio API
+             */
+            function playSound(type) {
+                if (!soundEnabled) return;
+                try {
+                    if (!audioCtx) {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        audioCtx = new AudioContext();
+                    }
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+
+                    const now = audioCtx.currentTime;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    if (type === 'plus') {
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(523.25, now);
+                        osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.14);
+                        gain.gain.setValueAtTime(0.22, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.25);
+
+                        const osc2 = audioCtx.createOscillator();
+                        const gain2 = audioCtx.createGain();
+                        osc2.type = 'sine';
+                        osc2.frequency.setValueAtTime(783.99, now + 0.04);
+                        osc2.frequency.exponentialRampToValueAtTime(1567.98, now + 0.2);
+                        gain2.gain.setValueAtTime(0.14, now + 0.04);
+                        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+                        osc2.connect(gain2);
+                        gain2.connect(audioCtx.destination);
+                        osc2.start(now + 0.04);
+                        osc2.stop(now + 0.29);
+                    } else if (type === 'minus') {
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(340, now);
+                        osc.frequency.exponentialRampToValueAtTime(190, now + 0.14);
+                        gain.gain.setValueAtTime(0.18, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.17);
+                    } else if (type === 'gameStart') {
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(330, now);
+                        osc.frequency.exponentialRampToValueAtTime(660, now + 0.18);
+                        gain.gain.setValueAtTime(0.15, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.23);
+                    } else if (type === 'gameEnd') {
+                        // Accord victoire à la fin de la game
+                        [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+                            const o = audioCtx.createOscillator();
+                            const g = audioCtx.createGain();
+                            o.type = 'triangle';
+                            o.frequency.setValueAtTime(freq, now + idx * 0.06);
+                            g.gain.setValueAtTime(0.16, now + idx * 0.06);
+                            g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.32);
+                            o.connect(g);
+                            g.connect(audioCtx.destination);
+                            o.start(now + idx * 0.06);
+                            o.stop(now + idx * 0.06 + 0.34);
+                        });
+                    }
+                } catch (e) {}
+            }
+
+            /**
+             * Sauvegarde de l'état global et journalier sur Firestore
+             */
+            async function saveSummaryToCloud() {
+                if (!db || !currentUser) return;
+                try {
+                    const summaryRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'tracker', 'summary');
+                    await setDoc(summaryRef, {
+                        totalChests,
+                        totalGames,
+                        dailyCounts,
+                        updatedAt: Date.now()
+                    }, { merge: true });
+                } catch (err) {
+                    console.error('Erreur sauvegarde summary:', err);
+                }
+            }
+
+            /**
+             * Enregistre une game terminée dans Firestore
+             */
+            async function saveGameRecordToCloud(gameRecord) {
+                if (!db || !currentUser) return;
+                try {
+                    const gamesCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'games');
+                    await addDoc(gamesCol, gameRecord);
+                } catch (err) {
+                    console.error('Erreur sauvegarde game:', err);
+                }
+            }
+
+            /**
+             * Connexion Firebase Auth + Écouteurs temps réel
+             */
+            async function initFirebase() {
+                try {
+                    // Utilise ta config personnalisée en priorité, sinon le fallback sandbox
+                    const activeConfig = (customFirebaseConfig && customFirebaseConfig.apiKey !== "TON_API_KEY") 
+                        ? customFirebaseConfig 
+                        : (typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null);
+
+                    if (!activeConfig) {
+                        cloudSyncStatus.textContent = 'Mode hors-ligne (veuillez renseigner votre firebaseConfig)';
+                        return;
+                    }
+
+                    const app = initializeApp(activeConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, (user) => {
+                        if (!user) return;
+                        currentUser = user;
+                        cloudSyncStatus.textContent = '☁️ Synchronisation Firebase active';
+
+                        // 1. Écoute du document résumé (totalChests, totalGames, dailyCounts)
+                        const summaryRef = doc(db, 'artifacts', appId, 'users', user.uid, 'tracker', 'summary');
+                        onSnapshot(summaryRef, (snap) => {
+                            if (snap.exists()) {
+                                const data = snap.data();
+                                if (typeof data.totalChests === 'number') totalChests = data.totalChests;
+                                if (typeof data.totalGames === 'number') totalGames = data.totalGames;
+                                if (data.dailyCounts && typeof data.dailyCounts === 'object') {
+                                    dailyCounts = data.dailyCounts;
+                                }
+                                updateMainDisplay();
+                                if (statsModal.classList.contains('open')) {
+                                    renderStatsView();
+                                }
+                            }
+                        }, (error) => {
+                            console.error('Erreur snapshot summary:', error);
+                        });
+
+                        // 2. Écoute de la collection des games
+                        const gamesCol = collection(db, 'artifacts', appId, 'users', user.uid, 'games');
+                        onSnapshot(gamesCol, (snapshot) => {
+                            const loadedGames = [];
+                            snapshot.forEach((docSnap) => {
+                                loadedGames.push({ id: docSnap.id, ...docSnap.data() });
+                            });
+                            // Tri en mémoire du plus récent au plus ancien
+                            loadedGames.sort((a, b) => (b.endTime || 0) - (a.endTime || 0));
+                            gamesHistory = loadedGames;
+
+                            if (statsModal.classList.contains('open')) {
+                                renderStatsView();
+                            }
+                        }, (error) => {
+                            console.error('Erreur snapshot games:', error);
+                        });
+                    });
+                } catch (err) {
+                    console.error('Erreur init Firebase:', err);
+                    cloudSyncStatus.textContent = 'Erreur de configuration Firebase';
+                }
+            }
+
+            /**
+             * Particule flottante +1
+             */
+            function spawnFloatingPlus(clientX, clientY) {
+                const el = document.createElement('div');
+                el.className = 'floating-plus';
+                el.textContent = '+1';
+
+                let x = clientX;
+                let y = clientY;
+
+                if (!x || !y) {
+                    const rect = chestContainer.getBoundingClientRect();
+                    x = rect.left + rect.width / 2 + (Math.random() * 30 - 15);
+                    y = rect.top + 15;
+                } else {
+                    x += (Math.random() * 24 - 12);
+                    y -= 20;
+                }
+
+                el.style.left = `${x}px`;
+                el.style.top = `${y}px`;
+                document.body.appendChild(el);
+                el.addEventListener('animationend', () => el.remove());
+            }
+
+            /**
+             * Met à jour l'interface principale
+             */
+            function updateMainDisplay(animationType = null) {
+                counterDisplay.textContent = totalChests.toLocaleString('fr-FR');
+                totalGamesDisplay.textContent = totalGames.toLocaleString('fr-FR');
+                btnMinus.disabled = totalChests <= 0;
+
+                if (inGame) {
+                    liveGameBadge.classList.remove('hidden');
+                    sessionChestsDisplay.textContent = currentGameChests;
+                    btnGameToggle.classList.remove('btn-game-start');
+                    btnGameToggle.classList.add('btn-game-end');
+                    gameBtnIcon.textContent = '🏁';
+                    gameBtnText.textContent = 'Fin de la game';
+                } else {
+                    liveGameBadge.classList.add('hidden');
+                    btnGameToggle.classList.remove('btn-game-end');
+                    btnGameToggle.classList.add('btn-game-start');
+                    gameBtnIcon.textContent = '▶️';
+                    gameBtnText.textContent = 'Démarrer une game';
+                }
+
+                if (animationType === 'plus') {
+                    counterDisplay.classList.remove('pop', 'shrink');
+                    chestContainer.classList.remove('chest-bounce');
+                    banner.classList.remove('pulse-glow');
+
+                    void counterDisplay.offsetWidth;
+
+                    counterDisplay.classList.add('pop');
+                    chestContainer.classList.add('chest-bounce');
+                    banner.classList.add('pulse-glow');
+
+                    setTimeout(() => {
+                        counterDisplay.classList.remove('pop');
+                        chestContainer.classList.remove('chest-bounce');
+                        banner.classList.remove('pulse-glow');
+                    }, 180);
+                } else if (animationType === 'minus') {
+                    counterDisplay.classList.remove('pop', 'shrink');
+                    void counterDisplay.offsetWidth;
+                    counterDisplay.classList.add('shrink');
+                    setTimeout(() => counterDisplay.classList.remove('shrink'), 140);
+                }
+            }
+
+            /**
+             * Gestion Démarrer / Terminer une game
+             */
+            async function toggleGameSession() {
+                if (!inGame) {
+                    // Démarrer une nouvelle game
+                    inGame = true;
+                    currentGameStart = Date.now();
+                    currentGameChests = 0;
+                    playSound('gameStart');
+
+                    sessionTimerDisplay.textContent = '00:00';
+                    timerInterval = setInterval(() => {
+                        if (inGame && currentGameStart) {
+                            sessionTimerDisplay.textContent = formatDuration(Date.now() - currentGameStart);
+                        }
+                    }, 1000);
+
+                    updateMainDisplay();
+                } else {
+                    // Terminer la game en cours et sauvegarder sur Firebase
+                    const endTime = Date.now();
+                    const startTime = currentGameStart || endTime;
+                    const durationMs = endTime - startTime;
+                    const dateKey = getDateKey(new Date(endTime));
+
+                    const gameRecord = {
+                        date: dateKey,
+                        startTime,
+                        endTime,
+                        startTimeStr: formatTimeHHMM(startTime),
+                        endTimeStr: formatTimeHHMM(endTime),
+                        durationMs,
+                        durationStr: formatDuration(durationMs),
+                        chestsOpened: currentGameChests
+                    };
+
+                    inGame = false;
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    currentGameStart = null;
+                    currentGameChests = 0;
+
+                    totalGames += 1;
+                    playSound('gameEnd');
+                    updateMainDisplay('plus');
+
+                    // Ajout optimiste local + sauvegarde cloud
+                    gamesHistory.unshift(gameRecord);
+                    await Promise.all([
+                        saveSummaryToCloud(),
+                        saveGameRecordToCloud(gameRecord)
+                    ]);
+                }
+            }
+
+            /**
+             * Ajouter (+1) ou retirer (-1) un coffre
+             */
+            function increment(event) {
+                const todayKey = getDateKey(new Date());
+                totalChests += 1;
+                dailyCounts[todayKey] = (dailyCounts[todayKey] || 0) + 1;
+
+                if (inGame) {
+                    currentGameChests += 1;
+                }
+
+                playSound('plus');
+                updateMainDisplay('plus');
+                saveSummaryToCloud();
+
+                const x = event && event.clientX ? event.clientX : null;
+                const y = event && event.clientY ? event.clientY : null;
+                spawnFloatingPlus(x, y);
+
+                if (navigator.vibrate) navigator.vibrate(18);
+            }
+
+            function decrement() {
+                if (totalChests <= 0) return;
+                const todayKey = getDateKey(new Date());
+                totalChests -= 1;
+                if ((dailyCounts[todayKey] || 0) > 0) {
+                    dailyCounts[todayKey] -= 1;
+                }
+
+                if (inGame && currentGameChests > 0) {
+                    currentGameChests -= 1;
+                }
+
+                playSound('minus');
+                updateMainDisplay('minus');
+                saveSummaryToCloud();
+
+                if (navigator.vibrate) navigator.vibrate(10);
+            }
+
+            /**
+             * Calculs et rendu complet de la vue Statistiques & Calendrier
+             */
+            function renderStatsView() {
+                const now = new Date();
+                const todayKey = getDateKey(now);
+
+                const yesterdayDate = new Date(now);
+                yesterdayDate.setDate(now.getDate() - 1);
+                const yesterdayKey = getDateKey(yesterdayDate);
+
+                // Calcul semaine en cours (Lundi à Dimanche)
+                const dayOfWeek = now.getDay(); // 0 = Dimanche, 1 = Lundi...
+                const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                const mondayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
+                let weekTotal = 0;
+
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(mondayDate);
+                    d.setDate(mondayDate.getDate() + i);
+                    const k = getDateKey(d);
+                    weekTotal += (dailyCounts[k] || 0);
+                }
+
+                // Affichage des cartes récapitulatives
+                statToday.textContent = (dailyCounts[todayKey] || 0).toLocaleString('fr-FR');
+                statYesterday.textContent = (dailyCounts[yesterdayKey] || 0).toLocaleString('fr-FR');
+                statWeek.textContent = weekTotal.toLocaleString('fr-FR');
+                statTotalGames.textContent = totalGames.toLocaleString('fr-FR');
+
+                // Moyenne & Record par game
+                if (gamesHistory.length > 0) {
+                    const sumGameChests = gamesHistory.reduce((acc, g) => acc + (g.chestsOpened || 0), 0);
+                    const avg = sumGameChests / gamesHistory.length;
+                    const best = Math.max(...gamesHistory.map(g => g.chestsOpened || 0));
+                    statAvgPerGame.textContent = avg.toFixed(1);
+                    statBestGame.textContent = best.toLocaleString('fr-FR');
+                } else if (totalGames > 0) {
+                    statAvgPerGame.textContent = (totalChests / totalGames).toFixed(1);
+                    statBestGame.textContent = '0';
+                } else {
+                    statAvgPerGame.textContent = '0.0';
+                    statBestGame.textContent = '0';
+                }
+
+                renderCalendar();
+                renderGamesHistoryList();
+            }
+
+            /**
+             * Rendu de la grille du calendrier mensuel
+             */
+            function renderCalendar() {
+                const year = currentCalDate.getFullYear();
+                const month = currentCalDate.getMonth();
+
+                const monthName = new Date(year, month, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+                calMonthLabel.textContent = monthName;
+
+                calendarDaysGrid.innerHTML = '';
+
+                const firstDay = new Date(year, month, 1).getDay(); // 0=Dim
+                const startOffset = firstDay === 0 ? 6 : firstDay - 1; // Lundi en premier
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                // Cases vides avant le 1er du mois
+                for (let i = 0; i < startOffset; i++) {
+                    const emptyCell = document.createElement('div');
+                    calendarDaysGrid.appendChild(emptyCell);
+                }
+
+                // Jours du mois
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const countForDay = dailyCounts[dateKey] || 0;
+
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'cal-day-btn';
+                    if (countForDay > 0) btn.classList.add('has-data');
+                    if (dateKey === selectedDateKey) btn.classList.add('selected');
+
+                    btn.innerHTML = `
+                        <span>${day}</span>
+                        ${countForDay > 0 ? `<span class="cal-day-count">${countForDay}</span>` : ''}
+                    `;
+
+                    btn.addEventListener('click', () => {
+                        selectedDateKey = dateKey;
+                        renderCalendar();
+                        renderGamesHistoryList();
+                    });
+
+                    calendarDaysGrid.appendChild(btn);
+                }
+
+                // Mise à jour du résumé du jour sélectionné
+                selectedDateLabel.textContent = formatDateFr(selectedDateKey);
+                selectedDateChests.textContent = (dailyCounts[selectedDateKey] || 0).toLocaleString('fr-FR');
+                const gamesOnSelectedDay = gamesHistory.filter(g => g.date === selectedDateKey);
+                selectedDateGamesCount.textContent = gamesOnSelectedDay.length;
+            }
+
+            /**
+             * Rendu de l'historique des games (toutes ou filtrées par jour sélectionné)
+             */
+            function renderGamesHistoryList() {
+                if (historyFilterMode === 'day') {
+                    filterGamesDay.className = 'px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-yellow-400 text-amber-950 cursor-pointer';
+                    filterGamesAll.className = 'px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-purple-900/70 border border-purple-600 text-purple-200 cursor-pointer';
+                } else {
+                    filterGamesAll.className = 'px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-yellow-400 text-amber-950 cursor-pointer';
+                    filterGamesDay.className = 'px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-purple-900/70 border border-purple-600 text-purple-200 cursor-pointer';
+                }
+
+                const filtered = historyFilterMode === 'day'
+                    ? gamesHistory.filter(g => g.date === selectedDateKey)
+                    : gamesHistory;
+
+                if (filtered.length === 0) {
+                    gamesHistoryList.innerHTML = `
+                        <div class="text-center py-6 px-3 rounded-xl bg-[#150833]/70 border border-purple-800/50 text-xs text-purple-300 font-bold">
+                            Aucune game enregistrée ${historyFilterMode === 'day' ? 'pour ce jour' : 'pour le moment'}.<br/>
+                            <span class="text-purple-400 font-normal">Clique sur « Démarrer une game » avant de lancer ta partie !</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                gamesHistoryList.innerHTML = filtered.map((game, idx) => {
+                    const gameNumber = filtered.length - idx;
+                    return `
+                        <div class="flex items-center justify-between bg-[#160836] border border-purple-700/50 rounded-xl px-3.5 py-2.5">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-black text-yellow-300">Game #${gameNumber}</span>
+                                    <span class="text-[11px] font-bold text-purple-300">• ${formatDateFr(game.date)}</span>
+                                </div>
+                                <div class="text-[11px] text-purple-400 font-bold mt-0.5">
+                                    🕒 ${game.startTimeStr || '--:--'} → ${game.endTimeStr || '--:--'} (${game.durationStr || '00:00'})
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-black text-yellow-300 leading-none" style="font-family: 'Lilita One', sans-serif;">
+                                    ${game.chestsOpened ?? 0}
+                                </div>
+                                <div class="text-[10px] font-extrabold uppercase text-purple-300">coffres</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Événements principaux
+            btnGameToggle.addEventListener('click', toggleGameSession);
+            btnPlus.addEventListener('click', (e) => increment(e));
+            btnMinus.addEventListener('click', () => decrement());
+
+            // Modale Statistiques
+            btnOpenStats.addEventListener('click', () => {
+                selectedDateKey = getDateKey(new Date());
+                currentCalDate = new Date();
+                renderStatsView();
+                statsModal.classList.add('open');
+            });
+
+            btnCloseStats.addEventListener('click', () => statsModal.classList.remove('open'));
+            statsModal.addEventListener('click', (e) => {
+                if (e.target === statsModal) statsModal.classList.remove('open');
+            });
+
+            calPrevMonth.addEventListener('click', () => {
+                currentCalDate = new Date(currentCalDate.getFullYear(), currentCalDate.getMonth() - 1, 1);
+                renderCalendar();
+            });
+
+            calNextMonth.addEventListener('click', () => {
+                currentCalDate = new Date(currentCalDate.getFullYear(), currentCalDate.getMonth() + 1, 1);
+                renderCalendar();
+            });
+
+            filterGamesDay.addEventListener('click', () => {
+                historyFilterMode = 'day';
+                renderGamesHistoryList();
+            });
+
+            filterGamesAll.addEventListener('click', () => {
+                historyFilterMode = 'all';
+                renderGamesHistoryList();
+            });
+
+            // Son
+            btnToggleSound.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+                soundLabel.textContent = soundEnabled ? 'Son : ON' : 'Son : OFF';
+                if (soundEnabled) playSound('plus');
+            });
+
+            // Modale Saisie / Reset
+            function openModal(mode) {
+                modalMode = mode;
+                if (mode === 'edit') {
+                    modalTitle.textContent = 'Modifier le total';
+                    modalDesc.textContent = 'Entre le nombre total de coffres ouverts :';
+                    modalInput.style.display = 'block';
+                    modalInput.value = totalChests;
+                    customModal.classList.add('open');
+                    setTimeout(() => {
+                        modalInput.focus();
+                        modalInput.select();
+                    }, 50);
+                } else if (mode === 'reset') {
+                    modalTitle.textContent = 'Réinitialiser le total ?';
+                    modalDesc.textContent = 'Le compteur global (' + totalChests.toLocaleString('fr-FR') + ') sera remis à zéro.';
+                    modalInput.style.display = 'none';
+                    customModal.classList.add('open');
+                }
+            }
+
+            function closeModal() {
+                customModal.classList.remove('open');
+            }
+
+            btnEdit.addEventListener('click', () => openModal('edit'));
+            numberWrapper.addEventListener('click', () => openModal('edit'));
+            btnReset.addEventListener('click', () => {
+                if (totalChests === 0) return;
+                openModal('reset');
+            });
+
+            modalCancel.addEventListener('click', closeModal);
+            customModal.addEventListener('click', (e) => {
+                if (e.target === customModal) closeModal();
+            });
+
+            modalConfirm.addEventListener('click', () => {
+                if (modalMode === 'edit') {
+                    const parsed = parseInt(modalInput.value, 10);
+                    if (!isNaN(parsed) && parsed >= 0) {
+                        totalChests = Math.min(parsed, 99999999);
+                        updateMainDisplay('plus');
+                        saveSummaryToCloud();
+                    }
+                } else if (modalMode === 'reset') {
+                    totalChests = 0;
+                    updateMainDisplay('minus');
+                    saveSummaryToCloud();
+                }
+                closeModal();
+            });
+
+            modalInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    modalConfirm.click();
+                } else if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+
+            // Raccourcis clavier
+            document.addEventListener('keydown', (e) => {
+                if (customModal.classList.contains('open') || statsModal.classList.contains('open')) return;
+
+                if (e.code === 'Space' || e.key === '+' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    btnPlus.classList.add('active-press');
+                    increment();
+                    setTimeout(() => btnPlus.classList.remove('active-press'), 110);
+                } else if (e.key === '-' || e.key === 'ArrowDown' || e.key === 'Backspace') {
+                    e.preventDefault();
+                    if (totalChests > 0) {
+                        btnMinus.classList.add('active-press');
+                        decrement();
+                        setTimeout(() => btnMinus.classList.remove('active-press'), 110);
+                    }
+                }
+            });
+
+            // Démarrage
+            updateMainDisplay();
+            await initFirebase();
+        });
+    </script>
+</body>
+</html>
